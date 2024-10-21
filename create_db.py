@@ -1,11 +1,11 @@
 import sqlite3
 
-def create_table(db_name, table_name, fields, primary_keys):
+def create_table(database_path, table_name, fields, primary_keys):
     """
     Creates a table in an SQLite database.
     
     Parameters:
-    - db_name: The name of the SQLite database file.
+    - database_path: The name of the SQLite database file.
     - table_name: The name of the table to be created.
     - fields: A dictionary where the keys are column names and the values are the column types (e.g., {"id": "INTEGER", "name": "TEXT"}).
     - primary_keys: A list of column names to be used as primary keys.
@@ -30,7 +30,7 @@ def create_table(db_name, table_name, fields, primary_keys):
     
     # Connect to the database and execute the query
     try:
-        conn = sqlite3.connect(db_name)
+        conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
         cursor.execute(create_table_query)
         conn.commit()
@@ -93,16 +93,16 @@ def create_summary(database_path):
     summary_primary = ['date']
     create_table(database_path, 'Summary', summary_fields, summary_primary)
 
-def show_tables(db_name):
+def show_tables(database_path):
     """
     Connects to an SQLite database and prints all table names.
 
     Parameters:
-    - db_name: The name of the SQLite database file (e.g., 'mydatabase.db').
+    - database_path: The name of the SQLite database file (e.g., 'mydatabase.db').
     """
     try:
         # Connect to the SQLite database
-        conn = sqlite3.connect(db_name)
+        conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
 
         # Execute the query to retrieve all table names
@@ -126,6 +126,44 @@ def show_tables(db_name):
         if conn:
             conn.close()
 
+def read_table_fields(database_path, table):
+    """
+    Connects to an SQLite database and prints all column names for a given table.
+
+    Parameters:
+    - database_path: The path to the SQLite database file (e.g., 'mydatabase.db').
+    - table: The name of the table to retrieve the fields from.
+    """
+    try:
+        # Connect to the SQLite database
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+
+        # Execute the query to get column information for the specified table
+        cursor.execute(f"PRAGMA table_info({table});")
+
+        # Fetch all column details
+        columns = cursor.fetchall()
+
+        # Check if columns were found
+        if columns:
+            print(f"Fields in the table '{table}':")
+            for column in columns:
+                print(f"- {column[1]} ({column[2]})")  # column[1] is the name, column[2] is the type
+        else:
+            print(f"No fields found or table '{table}' does not exist.")
+    
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    
+    finally:
+        if conn:
+            conn.close()
+
+def read_table_vals(database_path, table):
+    pass
+
+
 def main():
     DB = "database.db"
     # create_daily(DB)
@@ -133,6 +171,7 @@ def main():
     # create_summary(DB)
 
     show_tables(DB)
+    read_table_fields(DB,"Daily")
 
 if __name__ == "__main__":
     main()
