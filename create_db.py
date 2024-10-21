@@ -41,6 +41,39 @@ def create_table(db_name, table_name, fields, primary_keys):
         if conn:
             conn.close()
 
+def show_tables(db_name):
+    """
+    Connects to an SQLite database and prints all table names.
+
+    Parameters:
+    - db_name: The name of the SQLite database file (e.g., 'mydatabase.db').
+    """
+    try:
+        # Connect to the SQLite database
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+
+        # Execute the query to retrieve all table names
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        
+        # Fetch all results (table names)
+        tables = cursor.fetchall()
+
+        # Check if any tables were found
+        if tables:
+            print("Tables in the database:")
+            for table in tables:
+                print(f"- {table[0]}")
+        else:
+            print("No tables found in the database.")
+    
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    
+    finally:
+        if conn:
+            conn.close()
+
 def main():
     DB = "database.db"
     daily_fields = {
@@ -55,8 +88,12 @@ def main():
         "curfew":"BOOL",
         "eat_out_help_out":"BOOL"
     }
+    daily_primary = ['date_days']
 
-    create_table(DB, 'Daily', {})
+
+
+    # create_table(DB, 'Daily', daily_fields, daily_primary)
+    show_tables(DB)
 
 if __name__ == "__main__":
     main()
