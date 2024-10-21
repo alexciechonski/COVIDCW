@@ -161,8 +161,45 @@ def read_table_fields(database_path, table):
             conn.close()
 
 def read_table_vals(database_path, table):
-    pass
+    """
+    Connects to an SQLite database and prints all the values in a given table.
 
+    Parameters:
+    - database_path: The path to the SQLite database file (e.g., 'mydatabase.db').
+    - table: The name of the table to retrieve the values from.
+    """
+    try:
+        # Connect to the SQLite database
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+
+        # Execute a query to select all values from the specified table
+        cursor.execute(f"SELECT * FROM {table}")
+
+        # Fetch all rows from the table
+        rows = cursor.fetchall()
+
+        # Get column names for better readability
+        column_names = [description[0] for description in cursor.description]
+
+        # Check if the table contains any rows
+        if rows:
+            print(f"Values in the table '{table}':")
+            # Print column names
+            print(f"{' | '.join(column_names)}")
+
+            # Print each row of values
+            for row in rows:
+                print(row)
+        else:
+            print(f"The table '{table}' is empty or does not exist.")
+    
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    
+    finally:
+        if conn:
+            conn.close()
 
 def main():
     DB = "database.db"
@@ -171,7 +208,7 @@ def main():
     # create_summary(DB)
 
     show_tables(DB)
-    read_table_fields(DB,"Daily")
+    read_table_vals(DB,"Daily")
 
 if __name__ == "__main__":
     main()
