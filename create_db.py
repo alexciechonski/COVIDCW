@@ -61,6 +61,7 @@ def create_weekly(database_path):
     weekly_fields = {
         'date_weeks':'TEXT',
         'schools_closed':"BOOL",
+        "pubs_closed": "BOOL",
         "shops_closed": "BOOL",
         "eating_places_closed":"BOOL",
         "stay_at_home": "BOOL",
@@ -73,6 +74,24 @@ def create_weekly(database_path):
     weekly_primary = ['date_weeks']
     create_table(database_path, 'Weekly', weekly_fields, weekly_primary)
 
+def create_summary(database_path):
+    summary_fields = {
+        'date':'TEXT',
+        'restriction':"TEXT",
+        "source": "TEXT",
+        'schools_closed':"BOOL",
+        "pubs_closed": "BOOL",
+        "shops_closed":"BOOL",
+        "eating_places_closed":"BOOL",
+        "stay_at_home": "BOOL",
+        "household_mixing_indoors_banned":"BOOL",
+        "wfh":"BOOL",
+        "rule_of_6_indoors":"BOOL",
+        "curfew":"BOOL",
+        "eat_out_help_out":"BOOL"
+    }
+    summary_primary = ['date']
+    create_table(database_path, 'Summary', summary_fields, summary_primary)
 
 def show_tables(db_name):
     """
@@ -110,7 +129,8 @@ def show_tables(db_name):
 def main():
     DB = "database.db"
     # create_daily(DB)
-    create_weekly(DB)
+    # create_weekly(DB)
+    # create_summary(DB)
 
     show_tables(DB)
 
