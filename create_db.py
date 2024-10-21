@@ -56,7 +56,23 @@ def create_daily(database_path):
     }
     daily_primary = ['date_days']
     create_table(database_path, 'Daily', daily_fields, daily_primary)
-    
+
+def create_weekly(database_path):
+    weekly_fields = {
+        'date_weeks':'TEXT',
+        'schools_closed':"BOOL",
+        "shops_closed": "BOOL",
+        "eating_places_closed":"BOOL",
+        "stay_at_home": "BOOL",
+        "household_mixing_indoors_banned":"BOOL",
+        "wfh":"BOOL",
+        "rule_of_6_indoors":"BOOL",
+        "curfew":"BOOL",
+        "eat_out_help_out":"BOOL"
+    }
+    weekly_primary = ['date_weeks']
+    create_table(database_path, 'Weekly', weekly_fields, weekly_primary)
+
 
 def show_tables(db_name):
     """
@@ -94,7 +110,8 @@ def show_tables(db_name):
 def main():
     DB = "database.db"
     # create_daily(DB)
-    
+    create_weekly(DB)
+
     show_tables(DB)
 
 if __name__ == "__main__":

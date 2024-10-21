@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -73,
-    "scrollLeft": -134,
+    "scrollTop": -284,
+    "scrollLeft": -289,
     "zoomLevel": 1,
     "show": {
       "tableComment": true,
@@ -316,7 +316,7 @@
         "comment": "",
         "columns": [
           {
-            "name": "date-weeks",
+            "name": "date_weeks",
             "comment": "",
             "dataType": "TEXT",
             "default": "",
@@ -331,7 +331,7 @@
               "pk": true,
               "fk": false,
               "pfk": false,
-              "widthName": 68.47900390625,
+              "widthName": 71.3798828125,
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
@@ -573,7 +573,7 @@
           "active": false,
           "left": 864,
           "top": 133,
-          "zIndex": 1,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 60
         },
