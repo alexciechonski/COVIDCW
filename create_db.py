@@ -1,15 +1,6 @@
 import sqlite3
 import pandas as pd
 
-def create_daily(database_path):
-    pass
-
-def create_weekly(database_path):
-    pass
-
-def create_summary(database_path):
-    pass
-
 def show_tables(database_path):
     """
     Connects to an SQLite database and prints all table names.
