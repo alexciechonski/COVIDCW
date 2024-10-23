@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 def create_table(database_path, table_name, fields, primary_keys):
     """
@@ -201,14 +202,30 @@ def read_table_vals(database_path, table):
         if conn:
             conn.close()
 
+def dataframe_to_sql(df: pd.DataFrame, db_name: str, table_name: str):
+    # Create a connection to the SQLite database
+    conn = sqlite3.connect(db_name)
+    
+    try:
+        # Write the DataFrame to the SQLite table
+        df.to_sql(table_name, conn, if_exists='replace', index=False)
+        print(f"DataFrame successfully written to {table_name} table in {db_name}")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Close the connection
+        conn.close()
+
 def main():
     DB = "database.db"
     # create_daily(DB)
     # create_weekly(DB)
     # create_summary(DB)
 
-    show_tables(DB)
-    read_table_vals(DB,"Daily")
+    # daily_df = pd.read_csv("restrictions_daily.csv")
+    # dataframe_to_sql(daily_df, "database.db", "daily2")
+    # show_tables(DB)
+    read_table_vals("database.db", 'daily2')
 
 if __name__ == "__main__":
     main()
