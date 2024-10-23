@@ -216,16 +216,31 @@ def dataframe_to_sql(df: pd.DataFrame, db_name: str, table_name: str):
         # Close the connection
         conn.close()
 
+def delete_table(db_name: str, table_name: str):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    try:
+        # Delete the table if it exists
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
+        conn.commit()  # Commit the changes
+        print(f"Table '{table_name}' has been deleted from the database '{db_name}'.")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Close the connection
+        conn.close()
+
 def main():
     DB = "database.db"
-    # create_daily(DB)
-    # create_weekly(DB)
-    # create_summary(DB)
+    show_tables(DB)
+    delete_table(DB, "Daily")
+    delete_table(DB, "Weekly")
+    delete_table(DB, "Summary")
+    delete_table(DB, "daily2")
+    show_tables(DB)
 
-    # daily_df = pd.read_csv("restrictions_daily.csv")
-    # dataframe_to_sql(daily_df, "database.db", "daily2")
-    # show_tables(DB)
-    read_table_vals("database.db", 'daily2')
 
 if __name__ == "__main__":
     main()
