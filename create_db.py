@@ -44,15 +44,15 @@ def create_table(database_path, table_name, fields, primary_keys):
 def create_daily(database_path):
     daily_fields = {
         'date_days':'TEXT',
-        'schools_closed':"BOOL",
-        "shops_closed": "BOOL",
-        "eating_places_closed":"BOOL",
-        "stay_at_home": "BOOL",
-        "household_mixing_indoors_banned":"BOOL",
-        "wfh":"BOOL",
-        "rule_of_6_indoors":"BOOL",
-        "curfew":"BOOL",
-        "eat_out_help_out":"BOOL"
+        'schools_closed':"INTEGER",
+        "shops_closed": "INTEGER",
+        "eating_places_closed":"INTEGER",
+        "stay_at_home": "INTEGER",
+        "household_mixing_indoors_banned":"INTEGER",
+        "wfh":"INTEGER",
+        "rule_of_6_indoors":"INTEGER",
+        "curfew":"INTEGER",
+        "eat_out_help_out":"INTEGER"
     }
     daily_primary = ['date_days']
     create_table(database_path, 'Daily', daily_fields, daily_primary)
@@ -60,16 +60,16 @@ def create_daily(database_path):
 def create_weekly(database_path):
     weekly_fields = {
         'date_weeks':'TEXT',
-        'schools_closed':"BOOL",
-        "pubs_closed": "BOOL",
-        "shops_closed": "BOOL",
-        "eating_places_closed":"BOOL",
-        "stay_at_home": "BOOL",
-        "household_mixing_indoors_banned":"BOOL",
-        "wfh":"BOOL",
-        "rule_of_6_indoors":"BOOL",
-        "curfew":"BOOL",
-        "eat_out_help_out":"BOOL"
+        'schools_closed':"INTEGER",
+        "pubs_closed": "INTEGER",
+        "shops_closed": "INTEGER",
+        "eating_places_closed":"INTEGER",
+        "stay_at_home": "INTEGER",
+        "household_mixing_indoors_banned":"INTEGER",
+        "wfh":"INTEGER",
+        "rule_of_6_indoors":"INTEGER",
+        "curfew":"INTEGER",
+        "eat_out_help_out":"INTEGER"
     }
     weekly_primary = ['date_weeks']
     create_table(database_path, 'Weekly', weekly_fields, weekly_primary)
@@ -79,16 +79,16 @@ def create_summary(database_path):
         'date':'TEXT',
         'restriction':"TEXT",
         "source": "TEXT",
-        'schools_closed':"BOOL",
-        "pubs_closed": "BOOL",
-        "shops_closed":"BOOL",
-        "eating_places_closed":"BOOL",
-        "stay_at_home": "BOOL",
-        "household_mixing_indoors_banned":"BOOL",
-        "wfh":"BOOL",
-        "rule_of_6_indoors":"BOOL",
-        "curfew":"BOOL",
-        "eat_out_help_out":"BOOL"
+        'schools_closed':"INTEGER",
+        "pubs_closed": "INTEGER",
+        "shops_closed":"INTEGER",
+        "eating_places_closed":"INTEGER",
+        "stay_at_home": "INTEGER",
+        "household_mixing_indoors_banned":"INTEGER",
+        "wfh":"INTEGER",
+        "rule_of_6_indoors":"INTEGER",
+        "curfew":"INTEGER",
+        "eat_out_help_out":"INTEGER"
     }
     summary_primary = ['date']
     create_table(database_path, 'Summary', summary_fields, summary_primary)
