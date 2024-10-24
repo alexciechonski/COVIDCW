@@ -15,7 +15,7 @@ def show_tables(database_path):
 
         # Execute the query to retrieve all table names
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        
+
         # Fetch all results (table names)
         tables = cursor.fetchall()
 
@@ -117,8 +117,8 @@ def dataframe_to_sql(df: pd.DataFrame, db_name: str, table_name: str):
         # Write the DataFrame to the SQLite table
         df.to_sql(table_name, conn, if_exists='replace', index=False)
         print(f"DataFrame successfully written to {table_name} table in {db_name}")
-    except Exception as e:
-        print(f"Error: {e}")
+    except sqlite3.DatabaseError as db_err:
+        print(f"Database error occurred: {db_err}")
     finally:
         # Close the connection
         conn.close()
@@ -133,8 +133,8 @@ def delete_table(db_name: str, table_name: str):
         cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
         conn.commit()  # Commit the changes
         print(f"Table '{table_name}' has been deleted from the database '{db_name}'.")
-    except Exception as e:
-        print(f"Error: {e}")
+    except sqlite3.DatabaseError as db_err:
+        print(f"Database error occurred: {db_err}")
     finally:
         # Close the connection
         conn.close()
