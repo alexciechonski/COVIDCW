@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 
 class DatabaseCreation:
-    def show_tables(self, database_path):
+    def show_tables(self, database_path: str):
         """
         Connects to an SQLite database and prints all table names.
 
@@ -35,7 +35,7 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def read_table_fields(self, database_path, table):
+    def read_table_fields(self, database_path: str, table: str):
         """
         Connects to an SQLite database and prints all column names for a given table.
 
@@ -69,7 +69,7 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def read_table_vals(self, database_path, table):
+    def read_table_vals(self, database_path: str, table: str):
         """
         Connects to an SQLite database and prints all the values in a given table.
 
