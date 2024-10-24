@@ -148,6 +148,10 @@ def main():
     dataframe_to_sql(weekly, DB, "Weekly")
     dataframe_to_sql(summary, DB, "Summary")
     show_tables(DB)
+    read_table_fields(DB, "Daily")
+    read_table_fields(DB, "Weekly")
+    read_table_fields(DB, "Summary")
+
 
 if __name__ == "__main__":
     main()
