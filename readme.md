@@ -4,6 +4,8 @@ The project includes Python scripts to explore and clean the dataset, as well as
 Project Structure
 
 Dataset
+The dataset used in this project is sourced from https://data.london.gov.uk/dataset/covid-19-restrictions-timeseries. It is licensed under UK Open Government Licence, which can be found here https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/.
+
 
 Setup and Installation
 1. Clone the repository:

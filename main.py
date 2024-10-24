@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def get_data():
+    # Dataset source: COVID-19 Restrictions Timeseries, owned by GLAGIS, licensed under UK Open Governemnt Licence
     daily = pd.read_csv("restrictions_daily.csv")
     weekly = pd.read_csv("restrictions_weekly.csv")
     summary = pd.read_csv("restrictions_summary.csv")
