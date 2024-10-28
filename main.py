@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 def get_data():
     # Dataset source: COVID-19 Restrictions Timeseries, owned by GLAGIS, licensed under UK Open Governemnt Licence
@@ -99,14 +100,46 @@ def timeline(df):
     plt.tight_layout()
     plt.show()
 
+def plot_restriction_timeline(summary):
+    summary = summary.dropna()
+    levels = [-5, -3, -1, 1, 3, 5]
+    summary['level'] = [levels[i % len(levels)] for i in range(len(summary))]
+    df = summary[['date','restriction','level']]
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    # print(df)
+
+    # timeline
+    fig, ax = plt.subplots(figsize=(18,9))
+    ax.plot(df['date'], [0,]*len(df), "-o", color="black", markerfacecolor="white")
+    ax.set_ylim(-7,7)
+
+    for i in range(len(df)):
+        date, event, level = df['date'][i], df['restriction'][i], df['level'][i]
+        y_offset = level + 0.5 * (-1)**i  # Stagger labels slightly
+        ax.annotate(
+            event, 
+            xy=(date, 0.1 if level>0 else -0.1), 
+            xytext=(date, y_offset), 
+            textcoords='data',
+            ha = "center",
+            va = 'bottom' if level > 0 else 'top',
+            fontsize=5, 
+            rotation=25,
+            arrowprops=dict(arrowstyle="-", color="red", linewidth=0.5)
+            )
+
+    ax.spines[['left', 'top', 'bottom', 'right']].set_visible(False)
+    ax.yaxis.set_visible(False)
+    plt.show()
+
 def main():
     daily, weekly, summary = get_data()
-    print(summary['restriction'])
 
     # timeline(daily)
 
     # cumulative = cumulative_data(daily)
     # plot_cumulative(cumulative, 'days')
+    plot_restriction_timeline(summary)
     
     # # dataframe shapes
     # print(f"daily shape: {daily.shape}")
