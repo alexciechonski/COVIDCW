@@ -132,6 +132,11 @@ def plot_restriction_timeline(summary):
     ax.yaxis.set_visible(False)
     plt.show()
 
+def get_data_types(daily, weekly, summary):
+    print("daily data types:", get_types(daily))
+    print("weekly data types:", get_types(weekly))
+    print('summary data types:', get_types(summary))
+
 def main():
     daily, weekly, summary = get_data(
         "datasets/restrictions_daily.csv", 
@@ -150,13 +155,8 @@ def main():
     # print(f"weekly shape: {weekly.shape}")
     # print(f"summary shape: {summary.shape}")
 
-    # # dataframe data types
-    # print("daily datatypes:")
-    # print(get_types(daily))
-    # print("weekly datatypes")
-    # print(get_types(weekly))
-    # print('summary datatypes')
-    # print(get_types(summary))
+    # dataframe data types
+    get_data_types(daily, weekly, summary)
     
     # # column names
     # print(get_col_names(daily, 'daily'))
