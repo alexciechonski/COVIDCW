@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 def get_data(path_daily, path_weekly, path_summary):
     # Dataset source: COVID-19 Restrictions Timeseries, owned by GLAGIS, licensed under UK Open Governemnt Licence
