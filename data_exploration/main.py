@@ -2,11 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def get_data():
+def get_data(path_daily, path_weekly, path_summary):
     # Dataset source: COVID-19 Restrictions Timeseries, owned by GLAGIS, licensed under UK Open Governemnt Licence
-    daily = pd.read_csv("restrictions_daily.csv")
-    weekly = pd.read_csv("restrictions_weekly.csv")
-    summary = pd.read_csv("restrictions_summary.csv")
+    daily = pd.read_csv(path_daily)
+    weekly = pd.read_csv(path_weekly)
+    summary = pd.read_csv(path_summary)
     return daily, weekly, summary
 
 def get_col_names(df: pd.DataFrame, name: str) -> str:
@@ -133,7 +133,11 @@ def plot_restriction_timeline(summary):
     plt.show()
 
 def main():
-    daily, weekly, summary = get_data()
+    daily, weekly, summary = get_data(
+        "datasets/restrictions_daily.csv", 
+        "datasets/restrictions_weekly.csv", 
+        "datasets/restrictions_summary.csv"
+        )
 
     # timeline(daily)
 
