@@ -4,9 +4,47 @@ weekly data shape: (202, 11)
 summary data shape: (30, 13)
 
 DATA TYPES
-daily data types: {'date': 'object', 'schools_closed': 'int64', 'pubs_closed': 'int64', 'shops_closed': 'int64', 'eating_places_closed': 'int64', 'stay_at_home': 'int64', 'household_mixing_indoors_banned': 'int64', 'wfh': 'int64', 'rule_of_6_indoors': 'int64', 'curfew': 'int64', 'eat_out_to_help_out': 'int64'}
-weekly data types: {'week_start': 'object', 'schools_closed': 'int64', 'pubs_closed': 'int64', 'shops_closed': 'int64', 'eating_places_closed': 'int64', 'stay_at_home': 'int64', 'household_mixing_indoors_banned': 'int64', 'wfh': 'int64', 'rule_of_6_indoors': 'int64', 'curfew': 'int64', 'eat_out_to_help_out': 'int64'}
-summary data types: {'date': 'object', 'restriction': 'object', 'source': 'object', 'schools_closed': 'int64', 'pubs_closed': 'int64', 'shops_closed': 'int64', 'eating_places_closed': 'int64', 'stay_at_home': 'int64', 'household_mixing_indoors_banned': 'int64', 'wfh': 'int64', 'rule_of_6_indoors': 'int64', 'curfew': 'int64', 'eat_out_to_help_out': 'int64'}
+daily data types: {
+  "date": "object",
+  "schools_closed": "int64",
+  "pubs_closed": "int64",
+  "shops_closed": "int64",
+  "eating_places_closed": "int64",
+  "stay_at_home": "int64",
+  "household_mixing_indoors_banned": "int64",
+  "wfh": "int64",
+  "rule_of_6_indoors": "int64",
+  "curfew": "int64",
+  "eat_out_to_help_out": "int64"
+}
+weekly data types: {
+  "week_start": "object",
+  "schools_closed": "int64",
+  "pubs_closed": "int64",
+  "shops_closed": "int64",
+  "eating_places_closed": "int64",
+  "stay_at_home": "int64",
+  "household_mixing_indoors_banned": "int64",
+  "wfh": "int64",
+  "rule_of_6_indoors": "int64",
+  "curfew": "int64",
+  "eat_out_to_help_out": "int64"
+}
+summary data types: {
+  "date": "object",
+  "restriction": "object",
+  "source": "object",
+  "schools_closed": "int64",
+  "pubs_closed": "int64",
+  "shops_closed": "int64",
+  "eating_places_closed": "int64",
+  "stay_at_home": "int64",
+  "household_mixing_indoors_banned": "int64",
+  "wfh": "int64",
+  "rule_of_6_indoors": "int64",
+  "curfew": "int64",
+  "eat_out_to_help_out": "int64"
+}
 
 COLUMNS
 daily columns: [
@@ -22,32 +60,32 @@ daily columns: [
   "curfew",
   "eat_out_to_help_out"
 ]
-weekly columns: {
-  "week_start": "object",
-  "schools_closed": "int64",
-  "pubs_closed": "int64",
-  "shops_closed": "int64",
-  "eating_places_closed": "int64",
-  "stay_at_home": "int64",
-  "household_mixing_indoors_banned": "int64",
-  "wfh": "int64",
-  "rule_of_6_indoors": "int64",
-  "curfew": "int64",
-  "eat_out_to_help_out": "int64"
-}
-summary columns: {
-  "date": "object",
-  "restriction": "object",
-  "source": "object",
-  "schools_closed": "int64",
-  "pubs_closed": "int64",
-  "shops_closed": "int64",
-  "eating_places_closed": "int64",
-  "stay_at_home": "int64",
-  "household_mixing_indoors_banned": "int64",
-  "wfh": "int64",
-  "rule_of_6_indoors": "int64",
-  "curfew": "int64",
-  "eat_out_to_help_out": "int64"
-}
+weekly columns: [
+  "week_start",
+  "schools_closed",
+  "pubs_closed",
+  "shops_closed",
+  "eating_places_closed",
+  "stay_at_home",
+  "household_mixing_indoors_banned",
+  "wfh",
+  "rule_of_6_indoors",
+  "curfew",
+  "eat_out_to_help_out"
+]
+summary columns: [
+  "date",
+  "restriction",
+  "source",
+  "schools_closed",
+  "pubs_closed",
+  "shops_closed",
+  "eating_places_closed",
+  "stay_at_home",
+  "household_mixing_indoors_banned",
+  "wfh",
+  "rule_of_6_indoors",
+  "curfew",
+  "eat_out_to_help_out"
+]
 

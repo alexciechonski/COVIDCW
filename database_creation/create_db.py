@@ -110,18 +110,60 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def dataframe_to_sql(self, df: pd.DataFrame, db_name: str, table_name: str):
+    def dataframe_to_sql(self, df: pd.DataFrame, db_name: str, table_name: str, not_null_columns:list=None, default_values:dict=None, check_constraints:dict=None):
+        """
+        Writes a DataFrame to a SQLite table with specified constraints.
+
+        Parameters:
+            df (pd.DataFrame): DataFrame to write to the SQLite database.
+            db_name (str): Name of the SQLite database file.
+            table_name (str): Name of the table to write data into.
+            not_null_columns (list): List of columns to set as NOT NULL.
+            default_values (dict): Dictionary with columns as keys and their default values as values.
+            check_constraints (dict): Dictionary with columns as keys and SQL check constraints as values.
+        """
         # Create a connection to the SQLite database
         conn = sqlite3.connect(db_name)
         
         try:
             # Write the DataFrame to the SQLite table
             df.to_sql(table_name, conn, if_exists='replace', index=False)
-            print(f"DataFrame successfully written to {table_name} table in {db_name}")
+            
+            cursor = conn.cursor()
+            
+            # Get the current schema of the table
+            cursor.execute(f"PRAGMA table_info({table_name})")
+
+            # Prepare the constraints
+            alterations = []
+            
+            if not_null_columns:
+                for column in not_null_columns:
+                    if column in df.columns:
+                        alterations.append(f"ALTER TABLE {table_name} ALTER COLUMN {column} SET NOT NULL")
+            
+            if default_values:
+                for column, default in default_values.items():
+                    if column in df.columns:
+                        alterations.append(f"ALTER TABLE {table_name} ALTER COLUMN {column} SET DEFAULT {default}")
+            
+            if check_constraints:
+                for column, check in check_constraints.items():
+                    if column in df.columns:
+                        alterations.append(f"ALTER TABLE {table_name} ADD CHECK ({check})")
+            
+            for alter in alterations:
+                try:
+                    cursor.execute(alter)
+                except sqlite3.DatabaseError as e:
+                    print(f"Error applying alteration '{alter}': {e}")
+            
+            conn.commit()
+            print(f"DataFrame successfully written to {table_name} table in {db_name} with constraints applied.")
+        
         except sqlite3.DatabaseError as db_err:
             print(f"Database error occurred: {db_err}")
         finally:
-            # Close the connection
             conn.close()
 
     def delete_table(self, db_name: str, table_name: str):
@@ -142,15 +184,15 @@ class DatabaseCreation:
 
 def main():
     DB = "database.db"
-    daily = pd.read_csv("restrictions_daily.csv")
-    weekly = pd.read_csv("restrictions_weekly.csv")
-    summary = pd.read_csv("restrictions_weekly.csv")
+    daily = pd.read_csv("datasets/restrictions_daily.csv")
+    weekly = pd.read_csv("datasets/restrictions_weekly.csv")
+    summary = pd.read_csv("datasets/restrictions_weekly.csv")
     db = DatabaseCreation()
     db.dataframe_to_sql(daily, DB, "Daily")
     db.dataframe_to_sql(weekly, DB, "Weekly")
     db.dataframe_to_sql(summary, DB, "Summary")
     db.show_tables(DB)
-    db.read_table_fields(DB, "Daily")
+    db.read_table_fields(DB, "DailyTEST")
     db.read_table_fields(DB, "Weekly")
     db.read_table_fields(DB, "Summary")
 

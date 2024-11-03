@@ -147,17 +147,17 @@ def get_data_shapes(daily, weekly, summary, output_file):
 def get_data_types(daily, weekly, summary, output_file):
     with open(output_file, 'a') as f:
         f.write("DATA TYPES\n")
-        f.write(f"daily data types: {get_types(daily)}\n")
-        f.write(f"weekly data types: {get_types(weekly)}\n")
-        f.write(f"summary data types: {get_types(summary)}\n")
+        f.write(f"daily data types: {json.dumps(get_types(daily), indent=2)}\n")
+        f.write(f"weekly data types: {json.dumps(get_types(weekly), indent=2)}\n")
+        f.write(f"summary data types: {json.dumps(get_types(summary), indent=2)}\n")
         f.write("\n")
 
 def get_columns(daily, weekly, summary, output_file):
     with open(output_file, 'a') as f:
         f.write("COLUMNS\n")
         f.write(f"daily columns: {json.dumps(get_col_names(daily), indent=2)}\n")
-        f.write(f"weekly columns: {json.dumps(get_types(weekly), indent=2)}\n")
-        f.write(f"summary columns: {json.dumps(get_types(summary), indent=2)}\n")
+        f.write(f"weekly columns: {json.dumps(get_col_names(weekly), indent=2)}\n")
+        f.write(f"summary columns: {json.dumps(get_col_names(summary), indent=2)}\n")
         f.write("\n")
 
 def main():
