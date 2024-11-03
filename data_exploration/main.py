@@ -77,7 +77,7 @@ def plot_num_days_closed(data_dict: dict, title: str):
     # Show the plot
     plt.tight_layout()
     # plt.show()
-    plt.savefig('data_exploration/prepared_data/num_days_closed.png')
+    plt.savefig('data_exploration/prepared_data/figs/num_days_closed.png')
 
 
 def cumulative_timeline(df):
@@ -101,7 +101,7 @@ def cumulative_timeline(df):
     # Show the plot
     plt.tight_layout()
     # plt.show()
-    plt.savefig('data_exploration/prepared_data/cumulative_timeline.png')
+    plt.savefig('data_exploration/prepared_data/figs/cumulative_timeline.png')
 
 def plot_restriction_timeline(summary):
     summary = summary.dropna()
@@ -134,7 +134,7 @@ def plot_restriction_timeline(summary):
     ax.spines[['left', 'top', 'bottom', 'right']].set_visible(False)
     ax.yaxis.set_visible(False)
     # plt.show()
-    plt.savefig('data_exploration/prepared_data/restriction_timeline.png')
+    plt.savefig('data_exploration/prepared_data/figs/restriction_timeline.png')
 
 def get_data_shapes(daily, weekly, summary, output_file):
     with open(output_file, 'a') as f:

@@ -2,6 +2,33 @@ This project is part of the COMP0035 module coursework and demonstrates the proc
 The project includes Python scripts to explore and clean the dataset, as well as to create and populate an SQLite database.
 
 Project Structure
+COVIDCW
+│
+├── data_exploration
+│   ├── prepared_data
+│   │   ├── figs
+│   │   │   ├── cumulative_timeline.png
+│   │   │   ├── num_days_closed.png
+│   │   │   └── restriction_timeline.png
+│   │   └── data.txt
+│   └── main.py
+│
+├── database_creation
+│   ├── create_db.py
+│   ├── database.db
+│   └── relations.vuerd.json
+│
+├── datasets
+│   ├── restrictions_daily.csv
+│   ├── restrictions_summary.csv
+│   └── restrictions_weekly.csv
+│
+├── venv
+│
+├── .gitignore
+├── pyproject.toml
+├── readme.md
+└── requirements.txt
 
 Dataset
 The dataset used in this project is sourced from https://data.london.gov.uk/dataset/covid-19-restrictions-timeseries. It is licensed under UK Open Government Licence, which can be found here https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/.
