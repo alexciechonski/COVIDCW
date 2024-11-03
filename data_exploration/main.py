@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
 
 def get_data(path_daily, path_weekly, path_summary):
     # Dataset source: COVID-19 Restrictions Timeseries, owned by GLAGIS, licensed under UK Open Governemnt Licence
@@ -8,9 +9,9 @@ def get_data(path_daily, path_weekly, path_summary):
     summary = pd.read_csv(path_summary)
     return daily, weekly, summary
 
-def get_col_names(df: pd.DataFrame, name: str) -> str:
-    cols_str = ", ".join(list(df.columns))
-    return f"Columns of the {name} dataframe are: {cols_str}"
+def get_col_names(df: pd.DataFrame) -> str:
+    return list(df.columns)
+    # return f"Columns of the {name} dataframe are: {cols_str}"
 
 def get_types(df):
     return {col: str(df[col].dtype) for col in df.columns}
@@ -90,7 +91,7 @@ def timeline(df):
     # Add labels and title
     plt.xlabel('Restriction Type')
     plt.ylabel('Total number of restrictions enforced:')
-    plt.title('Total number of restrictions enforced per da')
+    plt.title('Total number of restrictions enforced per day')
     
     # Rotate x-tick labels if names are too long
     plt.xticks(rotation=45, ha='right')
@@ -131,10 +132,29 @@ def plot_restriction_timeline(summary):
     ax.yaxis.set_visible(False)
     plt.show()
 
-def get_data_types(daily, weekly, summary):
-    print("daily data types:", get_types(daily))
-    print("weekly data types:", get_types(weekly))
-    print('summary data types:', get_types(summary))
+def get_data_shapes(daily, weekly, summary, output_file):
+    with open(output_file, 'a') as f:
+            f.write("DATA SHAPES\n")
+            f.write(f"daily data shape: {daily.shape}\n")
+            f.write(f"weekly data shape: {weekly.shape}\n")
+            f.write(f"summary data shape: {summary.shape}\n")
+            f.write("\n")
+
+def get_data_types(daily, weekly, summary, output_file):
+    with open(output_file, 'a') as f:
+        f.write("DATA TYPES\n")
+        f.write(f"daily data types: {get_types(daily)}\n")
+        f.write(f"weekly data types: {get_types(weekly)}\n")
+        f.write(f"summary data types: {get_types(summary)}\n")
+        f.write("\n")
+
+def get_columns(daily, weekly, summary, output_file):
+    with open(output_file, 'a') as f:
+        f.write("COLUMNS\n")
+        f.write(f"daily columns: {json.dumps(get_col_names(daily), indent=2)}\n")
+        f.write(f"weekly columns: {json.dumps(get_types(weekly), indent=2)}\n")
+        f.write(f"summary columns: {json.dumps(get_types(summary), indent=2)}\n")
+        f.write("\n")
 
 def main():
     daily, weekly, summary = get_data(
@@ -143,24 +163,21 @@ def main():
         "datasets/restrictions_summary.csv"
         )
 
+    # dataframe shapes
+    get_data_shapes(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+
+    # dataframe data types
+    get_data_types(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    
+    # column names
+    get_columns(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+
     # timeline(daily)
 
     # cumulative = cumulative_data(daily)
     # plot_cumulative(cumulative, 'days')
-    plot_restriction_timeline(summary)
-    
-    # # dataframe shapes
-    # print(f"daily shape: {daily.shape}")
-    # print(f"weekly shape: {weekly.shape}")
-    # print(f"summary shape: {summary.shape}")
 
-    # dataframe data types
-    get_data_types(daily, weekly, summary)
-    
-    # # column names
-    # print(get_col_names(daily, 'daily'))
-    # print(get_col_names(weekly, 'weekly'))
-    # print(get_col_names(summary, 'summary'))
+    # plot_restriction_timeline(summary)
 
 if __name__ == "__main__":
     main()
