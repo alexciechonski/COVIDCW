@@ -34,7 +34,7 @@ def get_closed_stats(df, time_unit):
     all_closed = sum(1 for a, b, c, d in zip(schools_closed, pubs_closed, shops_closed, eating_closed) if a == b == c == d == 1)
     return time, schools_closed.count(1), pubs_closed.count(1), shops_closed.count(1), eating_closed.count(1), all_closed
 
-def cumulative_data(df):
+def num_days_closed(df):
     schools_closed = df['schools_closed'].tolist().count(1)
     pubs_closed = df['pubs_closed'].tolist().count(1)
     shops_closed = df['shops_closed'].tolist().count(1)
@@ -57,7 +57,7 @@ def cumulative_data(df):
         'eat_out': eat_out
     }
     
-def plot_cumulative(data_dict: dict, title: str):
+def plot_num_days_closed(data_dict: dict, title: str):
     # Ensure that both keys and values are in the correct format
     names = list(data_dict.keys())  # Assuming keys are hashable (e.g., strings)
     values = list(data_dict.values())  # Convert Series to list if needed
@@ -76,9 +76,11 @@ def plot_cumulative(data_dict: dict, title: str):
     
     # Show the plot
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig('data_exploration/prepared_data/num_days_closed.png')
 
-def timeline(df):
+
+def cumulative_timeline(df):
     df['date'] = pd.to_datetime(df['date'])  # Ensure date column is in datetime format
     df['row_sum'] = df.apply(lambda row: sum([x for x in row if isinstance(x, int)]), axis=1)
     x = df['date'].tolist()
@@ -98,7 +100,8 @@ def timeline(df):
     
     # Show the plot
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig('data_exploration/prepared_data/cumulative_timeline.png')
 
 def plot_restriction_timeline(summary):
     summary = summary.dropna()
@@ -130,7 +133,8 @@ def plot_restriction_timeline(summary):
 
     ax.spines[['left', 'top', 'bottom', 'right']].set_visible(False)
     ax.yaxis.set_visible(False)
-    plt.show()
+    # plt.show()
+    plt.savefig('data_exploration/prepared_data/restriction_timeline.png')
 
 def get_data_shapes(daily, weekly, summary, output_file):
     with open(output_file, 'a') as f:
@@ -163,21 +167,20 @@ def main():
         "datasets/restrictions_summary.csv"
         )
 
-    # dataframe shapes
-    get_data_shapes(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # # dataframe shapes
+    # get_data_shapes(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
 
-    # dataframe data types
-    get_data_types(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # # dataframe data types
+    # get_data_types(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
     
-    # column names
-    get_columns(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # # column names
+    # get_columns(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
 
-    # timeline(daily)
+    # cumulative_timeline(daily)
 
-    # cumulative = cumulative_data(daily)
-    # plot_cumulative(cumulative, 'days')
+    # plot_num_days_closed(num_days_closed(daily), 'days')
 
-    # plot_restriction_timeline(summary)
+    plot_restriction_timeline(summary)
 
 if __name__ == "__main__":
     main()
