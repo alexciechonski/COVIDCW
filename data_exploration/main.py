@@ -167,19 +167,22 @@ def main():
         "datasets/restrictions_summary.csv"
         )
 
-    # # dataframe shapes
-    # get_data_shapes(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # dataframe shapes
+    get_data_shapes(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
 
-    # # dataframe data types
-    # get_data_types(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # dataframe data types
+    get_data_types(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
     
-    # # column names
-    # get_columns(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
+    # column names
+    get_columns(daily, weekly, summary, "data_exploration/prepared_data/data.txt")
 
-    # cumulative_timeline(daily)
+    #plot timeline graph
+    cumulative_timeline(daily)
 
-    # plot_num_days_closed(num_days_closed(daily), 'days')
+    # plot number of days closed bar chart
+    plot_num_days_closed(num_days_closed(daily), 'days')
 
+    # plot restriction timelime
     plot_restriction_timeline(summary)
 
 if __name__ == "__main__":
