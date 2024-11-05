@@ -1,17 +1,18 @@
 import sqlite3
 import pandas as pd
+from frames import Frames
 
 class DatabaseCreation:
-    def show_tables(self, database_path: str):
+    def __init__(self, db) -> None:
+        self.db = db
+
+    def show_tables(self):
         """
         Connects to an SQLite database and prints all table names.
-
-        Parameters:
-        - database_path: The name of the SQLite database file (e.g., 'mydatabase.db').
         """
         try:
             # Connect to the SQLite database
-            conn = sqlite3.connect(database_path)
+            conn = sqlite3.connect(self.db)
             cursor = conn.cursor()
 
             # Execute the query to retrieve all table names
@@ -35,17 +36,16 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def read_table_fields(self, database_path: str, table: str):
+    def read_table_fields(self, table: str):
         """
         Connects to an SQLite database and prints all column names for a given table.
 
         Parameters:
-        - database_path: The path to the SQLite database file (e.g., 'mydatabase.db').
         - table: The name of the table to retrieve the fields from.
         """
         try:
             # Connect to the SQLite database
-            conn = sqlite3.connect(database_path)
+            conn = sqlite3.connect(self.db)
             cursor = conn.cursor()
 
             # Execute the query to get column information for the specified table
@@ -69,17 +69,16 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def read_table_vals(self, database_path: str, table: str):
+    def read_table_vals(self, table: str):
         """
         Connects to an SQLite database and prints all the values in a given table.
 
         Parameters:
-        - database_path: The path to the SQLite database file (e.g., 'mydatabase.db').
         - table: The name of the table to retrieve the values from.
         """
         try:
             # Connect to the SQLite database
-            conn = sqlite3.connect(database_path)
+            conn = sqlite3.connect(self.db)
             cursor = conn.cursor()
 
             # Execute a query to select all values from the specified table
@@ -110,91 +109,219 @@ class DatabaseCreation:
             if conn:
                 conn.close()
 
-    def dataframe_to_sql(self, df: pd.DataFrame, db_name: str, table_name: str, not_null_columns:list=None, default_values:dict=None, check_constraints:dict=None):
-        """
-        Writes a DataFrame to a SQLite table with specified constraints.
-
-        Parameters:
-            df (pd.DataFrame): DataFrame to write to the SQLite database.
-            db_name (str): Name of the SQLite database file.
-            table_name (str): Name of the table to write data into.
-            not_null_columns (list): List of columns to set as NOT NULL.
-            default_values (dict): Dictionary with columns as keys and their default values as values.
-            check_constraints (dict): Dictionary with columns as keys and SQL check constraints as values.
-        """
-        # Create a connection to the SQLite database
-        conn = sqlite3.connect(db_name)
-        
-        try:
-            # Write the DataFrame to the SQLite table
-            df.to_sql(table_name, conn, if_exists='replace', index=False)
-            
-            cursor = conn.cursor()
-            
-            # Get the current schema of the table
-            cursor.execute(f"PRAGMA table_info({table_name})")
-
-            # Prepare the constraints
-            alterations = []
-            
-            if not_null_columns:
-                for column in not_null_columns:
-                    if column in df.columns:
-                        alterations.append(f"ALTER TABLE {table_name} ALTER COLUMN {column} SET NOT NULL")
-            
-            if default_values:
-                for column, default in default_values.items():
-                    if column in df.columns:
-                        alterations.append(f"ALTER TABLE {table_name} ALTER COLUMN {column} SET DEFAULT {default}")
-            
-            if check_constraints:
-                for column, check in check_constraints.items():
-                    if column in df.columns:
-                        alterations.append(f"ALTER TABLE {table_name} ADD CHECK ({check})")
-            
-            for alter in alterations:
-                try:
-                    cursor.execute(alter)
-                except sqlite3.DatabaseError as e:
-                    print(f"Error applying alteration '{alter}': {e}")
-            
-            conn.commit()
-            print(f"DataFrame successfully written to {table_name} table in {db_name} with constraints applied.")
-        
-        except sqlite3.DatabaseError as db_err:
-            print(f"Database error occurred: {db_err}")
-        finally:
-            conn.close()
-
-    def delete_table(self, db_name: str, table_name: str):
+    def delete_table(self, table_name: str):
         # Connect to the SQLite database
-        conn = sqlite3.connect(db_name)
+        conn = sqlite3.connect(self.db)
         cursor = conn.cursor()
 
         try:
             # Delete the table if it exists
             cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
             conn.commit()  # Commit the changes
-            print(f"Table '{table_name}' has been deleted from the database '{db_name}'.")
+            print(f"Table '{table_name}' has been deleted from the database '{self.db}'.")
         except sqlite3.DatabaseError as db_err:
             print(f"Database error occurred: {db_err}")
         finally:
             # Close the connection
             conn.close()
 
+    def create_table(self, table_name, columns, foreign_keys=None, primary_key=None):
+        """
+        Creates a table in SQLite.
+
+        Parameters:
+        - table_name (str): Name of the table to create.
+        - columns (list of tuples): Each tuple should contain the column name, data type, and constraints.
+                                Example: [("id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"), 
+                                            ("name", "TEXT", "NOT NULL"), 
+                                            ("age", "INTEGER", "DEFAULT 0")]
+        """
+        # Connect to the SQLite database
+        conn = sqlite3.connect(self.db)
+        cursor = conn.cursor()
+        
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        columns_definition = ", ".join([f"{col[0]} {col[1]} {col[2]}" for col in columns])
+        
+        foreign_keys_definition = ""
+        if foreign_keys:
+            foreign_keys_definition = ", " + ", ".join(
+                [f"FOREIGN KEY ({fk[0]}) REFERENCES {fk[1]}" for fk in foreign_keys]
+            )
+
+        primary_key_definition = ""
+        if primary_key:
+            primary_key_definition = f", PRIMARY KEY ({', '.join(primary_key)})"
+
+        create_table_sql = f"""
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    {columns_definition}
+                    {foreign_keys_definition}
+                    {primary_key_definition}
+                );
+                """        
+        try:
+            # Execute the SQL statement
+            cursor.execute(create_table_sql)
+            print(f"Table '{table_name}' created successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+        finally:
+            # Commit changes and close the connection
+            conn.commit()
+            conn.close()
+
+    def insert_data(self, table_name, data):
+        """
+        Inserts data into an SQLite table.
+
+        Parameters:
+        - table_name (str): Name of the table to insert data into.
+        - data (list of tuples): List of tuples, where each tuple represents a row of data to insert.
+                                Example: [(1, '2023-01-01'), (2, '2023-01-02')]
+        """
+        # Connect to the SQLite database
+        conn = sqlite3.connect(self.db)
+        cursor = conn.cursor()
+
+        # Generate placeholders for the data based on the number of columns
+        placeholders = ', '.join(['?' for _ in data[0]])
+        insert_sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
+
+        try:
+            # Execute the insert statement for all rows in data
+            for t in data:
+                cursor.execute(insert_sql, t)
+            # print(f"Inserted {len(data)} rows into '{table_name}' successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+        finally:
+            # Commit changes and close the connection
+            print('dun')
+            conn.commit()
+            conn.close()
+            
+def put_data(db_path, df, table_name):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    data = list(df.itertuples(index=False, name=None))
+    print(data)
+    # Generate placeholders based on the number of columns in the DataFrame
+    placeholders = ', '.join(['?' for _ in range(len(df.columns))])
+    insert_sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
+    print(insert_sql)
+    
+    try:
+        # Execute the insert statement for all rows in data
+        cursor.executemany(insert_sql, data)
+        print(f"Inserted {len(data)} rows into '{table_name}' table.")
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    finally:
+        # Commit changes and close the connection
+        conn.commit()
+        conn.close()
+
+def make_table(db_path, table_name, cols_dict:dict):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
+    cols_str = f"({', '.join([f'{col_name} {constraint.upper()}' for col_name, constraint in cols_dict.items()])})"
+    query = f"CREATE TABLE {table_name} {cols_str}"
+    try:
+        cursor.execute(query)
+        print(f"Table '{table_name}' created successfully.")
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+    finally:
+        conn.commit()
+        conn.close()
+
+class Tables(Frames):
+    def __init__(self, db_path: str, daily_path: str, weekly_path: str, summary_path: str) -> None:
+        super().__init__(daily_path=daily_path, weekly_path=weekly_path, summary_path=summary_path)
+        self.db = db_path
+        self.date_df = self.get_date_df()
+        self.week_df = self.get_week_df()
+        self.source_df = self.get_source_df()
+        self.restriction_df = self.get_restriction_df()
+        self.summary_restriction_df = self.get_summary_restriction_df()
+        self.daily_restriction_df = self.get_daily_restriction_df()
+        self.weekly_restriction_df = self.get_weekly_restriction_df()
+
+    def t_date(self):
+        db = DatabaseCreation(self.db)
+        cols = {
+            "date": "TEXT",
+            "date_id":"INTEGER PRIMARY KEY",
+        }
+        make_table(self.db, "Date8", cols)
+        data = list(self.date_df.itertuples(index=False, name=None))
+        db.insert_data("Date8", data)
+
+    def week(db_path, weekly_df):
+        db = DatabaseCreation(db_path)
+        week_cols = [
+            ("week_id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+            ("week_start", "INTEGER", "NOT NULL")
+        ]
+        db.create_table("Week", week_cols)
+
+
+    def restriction(db_path, summary):
+        db = DatabaseCreation(db_path)
+        restriction_cols = [
+            ("restriction_id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+            ("name", "TEXT", "NOT NULL")
+        ]
+        db.create_table("Restriction", restriction_cols)
+
+    def source(db_path, summary):
+        db = DatabaseCreation(db_path)
+        source_cols = [
+            ("source_id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+            ("name", "TEXT", "NOT NULL")
+        ]
+        db.create_table("Source", source_cols)
+
+    def daily_restriction(db_path, daily, summary):
+        db = DatabaseCreation(db_path)
+        columns = [
+            ("value", "INTEGER", "NOT NULL"),
+            ("date_id", "INTEGER", "NOT NULL"),
+            ("restriction_id", "INTEGER", "NOT NULL")
+            ]
+        foreign_keys = [
+                ("date_id", "Date(date_id)"),
+                ("restriction_id", "Restriction(restriction_id)")
+            ]
+        db.create_table("DailyRestrictions", columns, foreign_keys=foreign_keys)
+
+
 def main():
-    DB = "database.db"
-    daily = pd.read_csv("datasets/restrictions_daily.csv")
-    weekly = pd.read_csv("datasets/restrictions_weekly.csv")
-    summary = pd.read_csv("datasets/restrictions_weekly.csv")
-    db = DatabaseCreation()
-    db.dataframe_to_sql(daily, DB, "Daily")
-    db.dataframe_to_sql(weekly, DB, "Weekly")
-    db.dataframe_to_sql(summary, DB, "Summary")
-    db.show_tables(DB)
-    db.read_table_fields(DB, "DailyTEST")
-    db.read_table_fields(DB, "Weekly")
-    db.read_table_fields(DB, "Summary")
+    DB = "database_creation/covid.db"
+    daily_path = "datasets/restrictions_daily.csv"
+    weekly_path = "datasets/restrictions_weekly.csv"
+    summary_path = "datasets/restrictions_summary.csv"
+    t = Tables(DB, daily_path=daily_path, weekly_path=weekly_path, summary_path=summary_path)
+    # t.t_date()
+
+    # data = list(t.date_df.itertuples(index=False, name=None))
+    # print(type(data[0][0]))
+    # # Generate placeholders based on the number of columns in the DataFrame
+    # placeholders = ', '.join(['?' for _ in range(len(t.date_df.columns))])
+    # table_name = "Test"
+    # insert_sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
+    # print(insert_sql)
+    
+
+
+
+    db = DatabaseCreation(DB)
+    db.show_tables()
+    db.read_table_vals("Date8")
+    
 
 
 if __name__ == "__main__":
