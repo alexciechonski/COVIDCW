@@ -170,7 +170,7 @@ class DataPreparation:
         ax.yaxis.set_visible(False)
         plt.savefig('data_exploration/prepared_data/figs/restriction_timeline.png')
 
-def main():
+def main() -> None:
     data_loader = DataLoader(
         "datasets/restrictions_daily.csv", 
         "datasets/restrictions_weekly.csv", 

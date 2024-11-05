@@ -1,14 +1,15 @@
 import sqlite3
 import pandas as pd
 from frames import Frames
+from typing import Any
 
 class DatabaseCreation:
-    def __init__(self, db) -> None:
+    def __init__(self, db: str) -> None:
         self._db = db
         self._conn = sqlite3.connect(self._db)
         self._conn.execute("PRAGMA foreign_keys = ON;")
 
-    def show_tables(self):
+    def show_tables(self) -> None:
         """
         Connects to an SQLite database and prints all table names.
         """
@@ -29,7 +30,7 @@ class DatabaseCreation:
         finally:
             self._conn.close()
 
-    def read_table_fields(self, table: str):
+    def read_table_fields(self, table: str) -> None:
         """
         Connects to an SQLite database and prints all column names for a given table.
 
@@ -53,7 +54,7 @@ class DatabaseCreation:
         finally:
             self._conn.close()
 
-    def read_table_vals(self, table: str):
+    def read_table_vals(self, table: str) -> None:
         """
         Connects to an SQLite database and prints all the values in a given table.
 
@@ -79,7 +80,7 @@ class DatabaseCreation:
         finally:
             self._conn.close()
 
-    def delete_table(self, table_name: str):
+    def delete_table(self, table_name: str) -> None:
         cursor = self._conn.cursor()
         try:
             cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
@@ -90,7 +91,7 @@ class DatabaseCreation:
         finally:
             self._conn.close()
 
-    def insert_data(self, table_name, data):
+    def insert_data(self, table_name: str, data: list[tuple[Any, ...]]) -> None:
         """
         Inserts data into an SQLite table.
 
@@ -113,7 +114,7 @@ class DatabaseCreation:
             self._conn.commit()
             self._conn.close()
             
-    def create_table(self, table_name, cols_dict:dict):
+    def create_table(self, table_name: str, cols_dict:dict[str,str]) -> None:
         cursor = self._conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON;")
         cols_str = f"({', '.join([f'{col_name} {constraint.upper()}' for col_name, constraint in cols_dict.items()])})"
@@ -139,7 +140,7 @@ class Tables(Frames):
         self.daily_restriction_df = self.get_daily_restriction_df()
         self.weekly_restriction_df = self.get_weekly_restriction_df()
 
-    def t_date(self):
+    def t_date(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "date": "TEXT NOT NULL",
@@ -149,7 +150,7 @@ class Tables(Frames):
         data = list(self.date_df.itertuples(index=False, name=None))
         db.insert_data("Date", data)
 
-    def t_week(self):
+    def t_week(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "week_start": "TEXT NOT NULL",
@@ -159,7 +160,7 @@ class Tables(Frames):
         data = list(self.week_df.itertuples(index=False, name=None))
         db.insert_data("Week", data)
 
-    def t_restriction(self):
+    def t_restriction(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "restriction": "TEXT NOT NULL",
@@ -169,7 +170,7 @@ class Tables(Frames):
         data = list(self.restriction_df.itertuples(index=False, name=None))
         db.insert_data("Restriction", data)
 
-    def t_source(self):
+    def t_source(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "source": "TEXT NOT NULL",
@@ -179,7 +180,7 @@ class Tables(Frames):
         data = list(self.source_df.itertuples(index=False, name=None))
         db.insert_data("Source", data)
 
-    def t_daily_restriction(self):
+    def t_daily_restriction(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
@@ -190,7 +191,7 @@ class Tables(Frames):
         data = list(self.daily_restriction_df.itertuples(index=False, name=None))
         db.insert_data("DailyRestriction", data)
 
-    def t_weekly_restriction(self):
+    def t_weekly_restriction(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "week_id": "INTEGER NOT NULL REFERENCES Week(week_id)",  
@@ -201,7 +202,7 @@ class Tables(Frames):
         data = list(self.weekly_restriction_df.itertuples(index=False, name=None))
         db.insert_data("WeeklyRestriction", data)
 
-    def t_summary_restriction(self):
+    def t_summary_restriction(self) -> None:
         db = DatabaseCreation(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
@@ -213,7 +214,7 @@ class Tables(Frames):
         data = list(self.summary_restriction_df.itertuples(index=False, name=None))
         db.insert_data("SummaryRestriction", data)
 
-    def generate(self):
+    def generate(self) -> None:
         self.t_date()
         self.t_week()
         self.t_restriction()
@@ -223,7 +224,7 @@ class Tables(Frames):
         self.t_summary_restriction()
 
 
-def main():
+def main() -> None:
     DB = "database_creation/covid.db"
     daily_path = "datasets/restrictions_daily.csv"
     weekly_path = "datasets/restrictions_weekly.csv"
