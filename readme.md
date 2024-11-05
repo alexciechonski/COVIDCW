@@ -14,8 +14,9 @@ COVIDCW
 │   └── main.py
 │
 ├── database_creation
+│   ├── covid.db
 │   ├── create_db.py
-│   ├── database.db
+│   ├── frames.py
 │   └── relations.vuerd.json
 │
 ├── datasets
