@@ -4,15 +4,16 @@ from frames import Frames
 
 class DatabaseCreation:
     def __init__(self, db) -> None:
-        self.db = db
+        self._db = db
+        self._conn = sqlite3.connect(self._db)
+        self._conn.execute("PRAGMA foreign_keys = ON;")
 
     def show_tables(self):
         """
         Connects to an SQLite database and prints all table names.
         """
         try:
-            conn = sqlite3.connect(self.db)
-            cursor = conn.cursor()
+            cursor = self._conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = cursor.fetchall()
             if tables:
@@ -26,8 +27,7 @@ class DatabaseCreation:
             print(f"An error occurred: {e}")
         
         finally:
-            if conn:
-                conn.close()
+            self._conn.close()
 
     def read_table_fields(self, table: str):
         """
@@ -37,8 +37,7 @@ class DatabaseCreation:
         - table: The name of the table to retrieve the fields from.
         """
         try:
-            conn = sqlite3.connect(self.db)
-            cursor = conn.cursor()
+            cursor = self._conn.cursor()
             cursor.execute(f"PRAGMA table_info({table});")
             columns = cursor.fetchall()
             if columns:
@@ -52,8 +51,7 @@ class DatabaseCreation:
             print(f"An error occurred: {e}")
         
         finally:
-            if conn:
-                conn.close()
+            self._conn.close()
 
     def read_table_vals(self, table: str):
         """
@@ -63,8 +61,7 @@ class DatabaseCreation:
         - table: The name of the table to retrieve the values from.
         """
         try:
-            conn = sqlite3.connect(self.db)
-            cursor = conn.cursor()
+            cursor = self._conn.cursor()
             cursor.execute(f"SELECT * FROM {table}")
             rows = cursor.fetchall()
             column_names = [description[0] for description in cursor.description]
@@ -80,20 +77,18 @@ class DatabaseCreation:
             print(f"An error occurred: {e}")
         
         finally:
-            if conn:
-                conn.close()
+            self._conn.close()
 
     def delete_table(self, table_name: str):
-        conn = sqlite3.connect(self.db)
-        cursor = conn.cursor()
+        cursor = self._conn.cursor()
         try:
             cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
-            conn.commit()  # Commit the changes
-            print(f"Table '{table_name}' has been deleted from the database '{self.db}'.")
+            self._conn.commit()  # Commit the changes
+            print(f"Table '{table_name}' has been deleted from the database '{self._db}'.")
         except sqlite3.DatabaseError as db_err:
             print(f"Database error occurred: {db_err}")
         finally:
-            conn.close()
+            self._conn.close()
 
     def insert_data(self, table_name, data):
         """
@@ -104,8 +99,7 @@ class DatabaseCreation:
         - data (list of tuples): List of tuples, where each tuple represents a row of data to insert.
                                 Example: [(1, '2023-01-01'), (2, '2023-01-02')]
         """
-        conn = sqlite3.connect(self.db)
-        cursor = conn.cursor()
+        cursor = self._conn.cursor()
         placeholders = ', '.join(['?' for _ in data[0]])
         insert_sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
 
@@ -116,12 +110,11 @@ class DatabaseCreation:
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
         finally:
-            conn.commit()
-            conn.close()
+            self._conn.commit()
+            self._conn.close()
             
     def create_table(self, table_name, cols_dict:dict):
-        conn = sqlite3.connect(self.db)
-        cursor = conn.cursor()
+        cursor = self._conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON;")
         cols_str = f"({', '.join([f'{col_name} {constraint.upper()}' for col_name, constraint in cols_dict.items()])})"
         query = f"CREATE TABLE {table_name} {cols_str}"
@@ -131,13 +124,13 @@ class DatabaseCreation:
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
         finally:
-            conn.commit()
-            conn.close()
+            self._conn.commit()
+            self._conn.close()
 
 class Tables(Frames):
     def __init__(self, db_path: str, daily_path: str, weekly_path: str, summary_path: str) -> None:
         super().__init__(daily_path=daily_path, weekly_path=weekly_path, summary_path=summary_path)
-        self.db = db_path
+        self._db = db_path
         self.date_df = self.get_date_df()
         self.week_df = self.get_week_df()
         self.source_df = self.get_source_df()
@@ -147,7 +140,7 @@ class Tables(Frames):
         self.weekly_restriction_df = self.get_weekly_restriction_df()
 
     def t_date(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "date": "TEXT NOT NULL",
             "date_id":"INTEGER PRIMARY KEY",
@@ -157,7 +150,7 @@ class Tables(Frames):
         db.insert_data("Date", data)
 
     def t_week(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "week_start": "TEXT NOT NULL",
             "week_id":"INTEGER PRIMARY KEY",
@@ -167,7 +160,7 @@ class Tables(Frames):
         db.insert_data("Week", data)
 
     def t_restriction(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "restriction": "TEXT NOT NULL",
             "restriction_id":"INTEGER PRIMARY KEY",
@@ -177,7 +170,7 @@ class Tables(Frames):
         db.insert_data("Restriction", data)
 
     def t_source(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "source": "TEXT NOT NULL",
             "source_id":"INTEGER PRIMARY KEY",
@@ -187,7 +180,7 @@ class Tables(Frames):
         db.insert_data("Source", data)
 
     def t_daily_restriction(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
             "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",  
@@ -198,7 +191,7 @@ class Tables(Frames):
         db.insert_data("DailyRestriction", data)
 
     def t_weekly_restriction(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "week_id": "INTEGER NOT NULL REFERENCES Week(week_id)",  
             "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",  
@@ -209,7 +202,7 @@ class Tables(Frames):
         db.insert_data("WeeklyRestriction", data)
 
     def t_summary_restriction(self):
-        db = DatabaseCreation(self.db)
+        db = DatabaseCreation(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
             "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",
