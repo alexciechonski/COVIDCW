@@ -70,16 +70,6 @@ class DataPreparation:
         self.daily = daily
         self.weekly = weekly
         self.summary = summary.dropna()
-    
-    @staticmethod # IS IT EVEN BEING USED
-    def get_closed_stats(df: pd.DataFrame, time_unit: str):
-        schools_closed = df['schools_closed'].tolist()
-        pubs_closed = df['pubs_closed'].tolist()
-        shops_closed = df['shops_closed'].tolist()
-        eating_closed = df['eating_places_closed'].tolist()
-        time = df[time_unit]
-        all_closed = sum(1 for a, b, c, d in zip(schools_closed, pubs_closed, shops_closed, eating_closed) if a == b == c == d == 1)
-        return time, schools_closed.count(1), pubs_closed.count(1), shops_closed.count(1), eating_closed.count(1), all_closed
 
     @staticmethod
     def num_days_closed(df: pd.DataFrame) -> dict[str,int]:
@@ -106,7 +96,7 @@ class DataPreparation:
         }
     
     @staticmethod
-    def plot_num_days_closed(data_dict: dict, title: str) -> None:
+    def plot_num_days_closed(data_dict: dict, title: str, folder_path: str) -> None:
         names = list(data_dict.keys())
         values = list(data_dict.values())
         
@@ -120,10 +110,10 @@ class DataPreparation:
         plt.xticks(rotation=45, ha='right')
         
         plt.tight_layout()
-        plt.savefig('data_exploration/prepared_data/figs/num_days_closed.png')
+        plt.savefig(f'{folder_path}/num_days_closed.png')
 
     @staticmethod
-    def cumulative_timeline(df: pd.DataFrame) -> None:
+    def cumulative_timeline(df: pd.DataFrame, folder_path: str) -> None:
         df['date'] = pd.to_datetime(df['date'])  # Ensure date column is in datetime format
         df['row_sum'] = df.apply(lambda row: sum([x for x in row if isinstance(x, int)]), axis=1)
         x = df['date'].tolist()
@@ -139,9 +129,9 @@ class DataPreparation:
         plt.xticks(rotation=45, ha='right')
         
         plt.tight_layout()
-        plt.savefig('data_exploration/prepared_data/figs/cumulative_timeline.png')
+        plt.savefig(f'{folder_path}/cumulative_timeline.png')
 
-    def plot_restriction_timeline(self) -> None:
+    def plot_restriction_timeline(self, folder_path: str) -> None:
         levels = [-5, -3, -1, 1, 3, 5]
         self.summary['level'] = [levels[i % len(levels)] for i in range(len(self.summary))]
         df = self.summary[['date','restriction','level']]
@@ -168,7 +158,7 @@ class DataPreparation:
 
         ax.spines[['left', 'top', 'bottom', 'right']].set_visible(False)
         ax.yaxis.set_visible(False)
-        plt.savefig('data_exploration/prepared_data/figs/restriction_timeline.png')
+        plt.savefig(f'{folder_path}/restriction_timeline.png')
 
 def main() -> None:
     data_loader = DataLoader(
@@ -186,14 +176,11 @@ def main() -> None:
     dx.get_columns(output_file) # column names
 
     # Data Preparation
+    folder_path = "data_exploration/prepared_data/figs"
     dp = DataPreparation(daily, weekly, summary)
-    dp.cumulative_timeline(daily) #plot timeline graph
-    dp.plot_num_days_closed(dp.num_days_closed(daily), 'days') # plot number of days closed bar chart
-    dp.plot_restriction_timeline(summary) # plot restriction timelime
+    dp.cumulative_timeline(daily, folder_path) #plot timeline graph
+    dp.plot_num_days_closed(dp.num_days_closed(daily), 'days', folder_path) # plot number of days closed bar chart
+    dp.plot_restriction_timeline(folder_path) # plot restriction timelime
 
 if __name__ == "__main__":
     main()
-
-# hardcoded files in figures
-# also weekly insights
-# not used function?

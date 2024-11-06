@@ -10,19 +10,19 @@ class Frames:
         self.restrs_map = {restr: i for i, restr in enumerate(self.summary.columns.tolist()[3:])}
         self.sources_map = {s: i for i, s in enumerate(set(self.summary['source']))}
 
-    def get_date_df(self):
+    def get_date_df(self) -> pd.DataFrame:
         return pd.DataFrame(list(self.dates_map.items()), columns=["date_id", "date"])
 
-    def get_week_df(self):
+    def get_week_df(self)-> pd.DataFrame:
         return pd.DataFrame(list(self.weeks_map.items()), columns=["week_id", "week_start"])
 
-    def get_restriction_df(self):
+    def get_restriction_df(self) -> pd.DataFrame:
         return pd.DataFrame(list(self.restrs_map.items()), columns=['restriction', 'id'])
 
-    def get_source_df(self):
+    def get_source_df(self) -> pd.DataFrame:
         return pd.DataFrame(list(self.sources_map.items()), columns=['source', 'id'])
 
-    def get_summary_restriction_df(self):
+    def get_summary_restriction_df(self) -> pd.DataFrame:
         dates_lst = self.summary['date'].tolist()
         sources_lst = self.summary['source'].tolist()
         source_ids = [self.sources_map[src] for src in sources_lst]
@@ -39,7 +39,7 @@ class Frames:
                 )
         return pd.DataFrame(res)
 
-    def get_daily_restriction_df(self):
+    def get_daily_restriction_df(self) -> pd.DataFrame:
         dates_lst = self.daily['date'].tolist()
         res = []
         for i, d in enumerate(dates_lst):
@@ -53,7 +53,7 @@ class Frames:
                     )
         return pd.DataFrame(res)
 
-    def get_weekly_restriction_df(self):
+    def get_weekly_restriction_df(self) -> pd.DataFrame:
         weeks_lst = self.weekly['week_start'].tolist()
         res = []
         for i, week in enumerate(weeks_lst):
@@ -66,13 +66,3 @@ class Frames:
                     }
                 )
         return pd.DataFrame(res)
-
-def main():
-    daily_path = "datasets/restrictions_daily.csv"
-    weekly_path = "datasets/restrictions_weekly.csv"
-    summary_path = "datasets/restrictions_summary.csv"
-    frames = Frames(daily_path, weekly_path, summary_path)
-
-
-if __name__ == "__main__":
-    main()
