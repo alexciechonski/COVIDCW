@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 
 class Frames:
     def __init__(self, daily_path: str, weekly_path: str, summary_path: str) -> None:
@@ -6,7 +6,9 @@ class Frames:
         self.weekly = pd.read_csv(weekly_path).dropna()
         self.summary =  pd.read_csv(summary_path).dropna()
         self.dates_map = {date: idx for idx, date in enumerate(self.daily['date'].tolist())}
-        self.weeks_map = {week_start: idx for idx, week_start in enumerate(self.weekly['week_start'].tolist())}
+        self.weeks_map = {
+            week_start: idx for idx, week_start in enumerate(self.weekly['week_start'].tolist())
+            }
         self.restrs_map = {restr: i for i, restr in enumerate(self.summary.columns.tolist()[3:])}
         self.sources_map = {s: i for i, s in enumerate(set(self.summary['source']))}
 
@@ -27,13 +29,13 @@ class Frames:
         sources_lst = self.summary['source'].tolist()
         source_ids = [self.sources_map[src] for src in sources_lst]
         res = []
-        for i, d in enumerate(dates_lst):
+        for i, date in enumerate(dates_lst):
             for restr in self.restrs_map.keys():
                 res.append(
                     {
-                        'date_id':self.dates_map[d], 
-                        'source_id':source_ids[i], 
-                        'restriction_id':self.restrs_map[restr], 
+                        'date_id':self.dates_map[date],
+                        'source_id':source_ids[i],
+                        'restriction_id':self.restrs_map[restr],
                         'in_place': int(self.summary[restr][i])
                     }
                 )
@@ -42,12 +44,12 @@ class Frames:
     def get_daily_restriction_df(self) -> pd.DataFrame:
         dates_lst = self.daily['date'].tolist()
         res = []
-        for i, d in enumerate(dates_lst):
+        for i, date in enumerate(dates_lst):
             for restr in self.restrs_map.keys():
                 res.append(
                     {
-                        'date_id':self.dates_map[d], 
-                        'restriction_id':self.restrs_map[restr], 
+                        'date_id':self.dates_map[date],
+                        'restriction_id':self.restrs_map[restr],
                         'in_place': int(self.daily[restr][i])
                     }
                     )
@@ -60,9 +62,10 @@ class Frames:
             for restr in self.restrs_map.keys():
                 res.append(
                     {
-                        'week_id':self.weeks_map[week], 
-                        'restriction_id':self.restrs_map[restr], 
+                        'week_id':self.weeks_map[week],
+                        'restriction_id':self.restrs_map[restr],
                         'in_place': int(self.weekly[restr][i])
                     }
                 )
         return pd.DataFrame(res)
+        

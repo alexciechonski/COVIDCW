@@ -1,11 +1,10 @@
-import sqlite3
-import pandas as pd
-from frames import Frames
 from typing import Any
+import sqlite3
+from frames import Frames
 
-class DatabaseCreation:
-    def __init__(self, db: str) -> None:
-        self._db = db
+class DatabaseManager:
+    def __init__(self, db_path: str) -> None:
+        self._db = db_path
         self._conn = sqlite3.connect(self._db)
         self._conn.execute("PRAGMA foreign_keys = ON;")
 
@@ -23,10 +22,8 @@ class DatabaseCreation:
                     print(f"- {table[0]}")
             else:
                 print("No tables found in the database.")
-        
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-        
+        except sqlite3.Error as err:
+            print(f"An error occurred: {err}")
         finally:
             self._conn.close()
 
@@ -44,13 +41,11 @@ class DatabaseCreation:
             if columns:
                 print(f"Fields in the table '{table}':")
                 for column in columns:
-                    print(f"- {column[1]} ({column[2]})")  # column[1] is the name, column[2] is the type
+                    print(f"- {column[1]} ({column[2]})")  # column[1] name, column[2] type
             else:
                 print(f"No fields found or table '{table}' does not exist.")
-        
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-        
+        except sqlite3.Error as err:
+            print(f"An error occurred: {err}")
         finally:
             self._conn.close()
 
@@ -73,10 +68,8 @@ class DatabaseCreation:
                     print(row)
             else:
                 print(f"The table '{table}' is empty or does not exist.")
-        
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-        
+        except sqlite3.Error as err:
+            print(f"An error occurred: {err}")
         finally:
             self._conn.close()
 
@@ -97,7 +90,7 @@ class DatabaseCreation:
 
         Parameters:
         - table_name (str): Name of the table to insert data into.
-        - data (list of tuples): List of tuples, where each tuple represents a row of data to insert.
+        - data (list of tuples): List of tuples, each tuple represents a row of data.
                                 Example: [(1, '2023-01-01'), (2, '2023-01-02')]
         """
         cursor = self._conn.cursor()
@@ -105,25 +98,27 @@ class DatabaseCreation:
         insert_sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
 
         try:
-            for t in data:
-                cursor.execute(insert_sql, t)
+            for row in data:
+                cursor.execute(insert_sql, row)
             print(f"Inserted {len(data)} rows into '{table_name}' successfully.")
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
+        except sqlite3.Error as err:
+            print(f"An error occurred: {err}")
         finally:
             self._conn.commit()
             self._conn.close()
-            
+
     def create_table(self, table_name: str, cols_dict:dict[str,str]) -> None:
         cursor = self._conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON;")
-        cols_str = f"({', '.join([f'{col_name} {constraint.upper()}' for col_name, constraint in cols_dict.items()])})"
+        cols_str = f"""
+                    ({', '.join([f'{col_name} {constraint.upper()}' for col_name, constraint in cols_dict.items()])})
+                    """
         query = f"CREATE TABLE {table_name} {cols_str}"
         try:
             cursor.execute(query)
             print(f"Table '{table_name}' created successfully.")
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
+        except sqlite3.Error as err:
+            print(f"An error occurred: {err}")
         finally:
             self._conn.commit()
             self._conn.close()
@@ -141,78 +136,78 @@ class Tables(Frames):
         self.weekly_restriction_df = self.get_weekly_restriction_df()
 
     def t_date(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
             "date": "TEXT NOT NULL",
             "date_id":"INTEGER PRIMARY KEY",
         }
-        db.create_table("Date", cols)
+        manager.create_table("Date", cols)
         data = list(self.date_df.itertuples(index=False, name=None))
-        db.insert_data("Date", data)
+        manager.insert_data("Date", data)
 
     def t_week(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
             "week_start": "TEXT NOT NULL",
             "week_id":"INTEGER PRIMARY KEY",
         }
-        db.create_table("Week", cols)
+        manager.create_table("Week", cols)
         data = list(self.week_df.itertuples(index=False, name=None))
-        db.insert_data("Week", data)
+        manager.insert_data("Week", data)
 
     def t_restriction(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
             "restriction": "TEXT NOT NULL",
             "restriction_id":"INTEGER PRIMARY KEY",
         }
-        db.create_table("Restriction", cols)
+        manager.create_table("Restriction", cols)
         data = list(self.restriction_df.itertuples(index=False, name=None))
-        db.insert_data("Restriction", data)
+        manager.insert_data("Restriction", data)
 
     def t_source(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
             "source": "TEXT NOT NULL",
             "source_id":"INTEGER PRIMARY KEY",
         }
-        db.create_table("Source", cols)
+        manager.create_table("Source", cols)
         data = list(self.source_df.itertuples(index=False, name=None))
-        db.insert_data("Source", data)
+        manager.insert_data("Source", data)
 
     def t_daily_restriction(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
-            "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
-            "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",  
-            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"  
+            "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)",
+            "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",
+            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"
         }
-        db.create_table("DailyRestriction", cols)
+        manager.create_table("DailyRestriction", cols)
         data = list(self.daily_restriction_df.itertuples(index=False, name=None))
-        db.insert_data("DailyRestriction", data)
+        manager.insert_data("DailyRestriction", data)
 
     def t_weekly_restriction(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
-            "week_id": "INTEGER NOT NULL REFERENCES Week(week_id)",  
-            "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",  
-            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"  
+            "week_id": "INTEGER NOT NULL REFERENCES Week(week_id)",
+            "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",
+            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"
         }
-        db.create_table("WeeklyRestriction", cols)
+        manager.create_table("WeeklyRestriction", cols)
         data = list(self.weekly_restriction_df.itertuples(index=False, name=None))
-        db.insert_data("WeeklyRestriction", data)
+        manager.insert_data("WeeklyRestriction", data)
 
     def t_summary_restriction(self) -> None:
-        db = DatabaseCreation(self._db)
+        manager = DatabaseManager(self._db)
         cols = {
-            "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)", 
+            "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)",
             "restriction_id": "INTEGER NOT NULL REFERENCES Restriction(restriction_id)",
-            "source_id": "INTEGER NOT NULL REFERENCES Source(source_id)",  
-            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"  
+            "source_id": "INTEGER NOT NULL REFERENCES Source(source_id)",
+            "in_place": "INTEGER NOT NULL CHECK (in_place <= 1 AND in_place >= 0)"
         }
-        db.create_table("SummaryRestriction", cols)
+        manager.create_table("SummaryRestriction", cols)
         data = list(self.summary_restriction_df.itertuples(index=False, name=None))
-        db.insert_data("SummaryRestriction", data)
+        manager.insert_data("SummaryRestriction", data)
 
     def generate(self) -> None:
         self.t_date()
@@ -225,15 +220,20 @@ class Tables(Frames):
 
 
 def main() -> None:
-    DB = "database_creation/covid.db"
+    db_path = "database_creation/covid.db"
     daily_path = "datasets/restrictions_daily.csv"
     weekly_path = "datasets/restrictions_weekly.csv"
     summary_path = "datasets/restrictions_summary.csv"
-    db = DatabaseCreation(DB)
-    tables = Tables(DB, daily_path=daily_path, weekly_path=weekly_path, summary_path=summary_path)
+    manager = DatabaseManager(db_path)
+    tables = Tables(
+        db_path,
+        daily_path=daily_path,
+        weekly_path=weekly_path,
+        summary_path=summary_path
+        )
     tables.generate()
-    db.show_tables()
-    
+    manager.show_tables()
 
 if __name__ == "__main__":
     main()
+    
