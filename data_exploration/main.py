@@ -18,7 +18,14 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 class DataLoader:
-    """Loads data from csv to pd.DataFrame"""
+    """
+    Loads data from csv to pd.DataFrame
+
+    Attributes:
+        path_daily (str): Path to the daily data csv file.
+        path_weekly (str): Path to the weekly data csv file.
+        path_summary (str): Path to the summary data csv file.
+    """
     def __init__(self, path_daily: str, path_weekly: str, path_summary: str) -> None:
         """
         Initializes DataLoader with paths to daily, weekly, and summary CSV files.
@@ -46,7 +53,14 @@ class DataLoader:
         return daily, weekly, summary
 
 class DataExploration:
-    """Class of functions for data exploration"""
+    """
+    Class of functions for data exploration
+
+    Attributes:
+        daily (pd.DataFrame): Daily DataFrame.
+        weekly (pd.DataFrame): Weekly DataFrame.
+        summary (pd.DataFrame): Summary DataFrame.
+    """
     def __init__(self, daily: pd.DataFrame, weekly: pd.DataFrame, summary: pd.DataFrame) -> None:
         """
         Initializes DataExploration with daily, weekly, and summary data.
@@ -161,7 +175,14 @@ class DataExploration:
             file.write("\n")
 
 class DataPreparation:
-    """Class of functions for data preparation"""
+    """
+    Class of functions for data preparation
+
+    Attributes:
+        daily (pd.DataFrame): Daily DataFrame.
+        weekly (pd.DataFrame): Weekly DataFrame.
+        summary (pd.DataFrame): Summary DataFrame.
+    """
     def __init__(self, daily: pd.DataFrame, weekly: pd.DataFrame, summary: pd.DataFrame) -> None:
         """
         Initializes DataPreparation with daily, weekly, and summary data.

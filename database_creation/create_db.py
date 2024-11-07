@@ -1,9 +1,44 @@
+"""
+This script manages the creation and population of an SQLite database with COVID-19
+restriction data. It includes functionality to create tables, insert data, and view
+database structure, leveraging CSV data sources.
+
+Classes:
+    - DatabaseManager: Manages basic database operations such as creating tables,
+      inserting data, deleting tables, and displaying database structure.
+    - Tables: Extends the Frames class to manage specific database tables related to
+      COVID-19 restriction data. It includes methods to create and populate tables
+      like Date, Week, Restriction, Source, DailyRestriction, WeeklyRestriction,
+      and SummaryRestriction.
+
+Functions:
+    - main(): Initializes the database and data tables, populates the database with
+      data from CSV files, and displays the structure of the database.
+
+Usage:
+    Run this script as a standalone program to create the database structure, insert
+    data from specified CSV files, and display the resulting tables in the database.
+"""
 from typing import Any
 import sqlite3
 from frames import Frames
 
 class DatabaseManager:
+    """
+    Manages database operations such as creating tables, inserting data,
+    and retrieving information about tables and fields.
+
+    Attributes:
+        _db (str): Path to the SQLite database.
+        _conn (sqlite3.Connection): SQLite connection object.
+    """
     def __init__(self, db_path: str) -> None:
+        """
+        Initializes the DatabaseManager with the path to the database.
+
+        Parameters:
+            db_path (str): Path to the SQLite database file.
+        """
         self._db = db_path
         self._conn = sqlite3.connect(self._db)
         self._conn.execute("PRAGMA foreign_keys = ON;")
@@ -32,7 +67,7 @@ class DatabaseManager:
         Connects to an SQLite database and prints all column names for a given table.
 
         Parameters:
-        - table: The name of the table to retrieve the fields from.
+            table: The name of the table to retrieve the fields from.
         """
         try:
             cursor = self._conn.cursor()
@@ -54,7 +89,7 @@ class DatabaseManager:
         Connects to an SQLite database and prints all the values in a given table.
 
         Parameters:
-        - table: The name of the table to retrieve the values from.
+            table: The name of the table to retrieve the values from.
         """
         try:
             cursor = self._conn.cursor()
@@ -74,6 +109,12 @@ class DatabaseManager:
             self._conn.close()
 
     def delete_table(self, table_name: str) -> None:
+        """
+        Deletes a specified table from the database.
+
+        Parameters:
+            table_name (str): The name of the table to delete.
+        """
         cursor = self._conn.cursor()
         try:
             cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
@@ -108,6 +149,13 @@ class DatabaseManager:
             self._conn.close()
 
     def create_table(self, table_name: str, cols_dict:dict[str,str]) -> None:
+        """
+        Creates a table in the database with specified columns.
+
+        Parameters:
+            table_name (str): Name of the table to create.
+            cols_dict (dict): Column names as keys and data types as values.
+        """
         cursor = self._conn.cursor()
         cursor.execute("PRAGMA foreign_keys = ON;")
         cols_str = f"""
@@ -124,7 +172,26 @@ class DatabaseManager:
             self._conn.close()
 
 class Tables(Frames):
+    """
+    A subclass of Frames that manages creation of specific tables in the database
+    and inserts data from various DataFrames.
+
+    Attributes:
+        db_path (str): Path to the SQLite database.
+        daily_path (str): Path to the daily dataset CSV file.
+        weekly_path (str): Path to the weekly dataset CSV file.
+        summary_path (str): Path to the summary dataset CSV file.
+    """
     def __init__(self, db_path: str, daily_path: str, weekly_path: str, summary_path: str) -> None:
+        """
+        Initializes the Tables class with database path and dataset paths.
+
+        Parameters:
+            db_path (str): Path to the SQLite database.
+            daily_path (str): Path to the daily dataset CSV file.
+            weekly_path (str): Path to the weekly dataset CSV file.
+            summary_path (str): Path to the summary dataset CSV file.
+        """
         super().__init__(daily_path=daily_path, weekly_path=weekly_path, summary_path=summary_path)
         self._db = db_path
         self.date_df = self.get_date_df()
@@ -136,6 +203,7 @@ class Tables(Frames):
         self.weekly_restriction_df = self.get_weekly_restriction_df()
 
     def t_date(self) -> None:
+        """Creates and populates the 'Date' table with data from date_df."""
         manager = DatabaseManager(self._db)
         cols = {
             "date": "TEXT NOT NULL",
@@ -146,6 +214,7 @@ class Tables(Frames):
         manager.insert_data("Date", data)
 
     def t_week(self) -> None:
+        """Creates and populates the 'Week' table with data from week_df."""
         manager = DatabaseManager(self._db)
         cols = {
             "week_start": "TEXT NOT NULL",
@@ -156,6 +225,7 @@ class Tables(Frames):
         manager.insert_data("Week", data)
 
     def t_restriction(self) -> None:
+        """Creates and populates the 'Restriction' table with data from restriction_df."""
         manager = DatabaseManager(self._db)
         cols = {
             "restriction": "TEXT NOT NULL",
@@ -166,6 +236,7 @@ class Tables(Frames):
         manager.insert_data("Restriction", data)
 
     def t_source(self) -> None:
+        """Creates and populates the 'Source' table with data from source_df."""
         manager = DatabaseManager(self._db)
         cols = {
             "source": "TEXT NOT NULL",
@@ -176,6 +247,10 @@ class Tables(Frames):
         manager.insert_data("Source", data)
 
     def t_daily_restriction(self) -> None:
+        """
+        Creates and populates the 'DailyRestriction' table with data
+        from daily_restriction_df.
+        """
         manager = DatabaseManager(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)",
@@ -187,6 +262,10 @@ class Tables(Frames):
         manager.insert_data("DailyRestriction", data)
 
     def t_weekly_restriction(self) -> None:
+        """
+        Creates and populates the 'WeeklyRestriction' table with data
+        from weekly_restriction_df.
+        """
         manager = DatabaseManager(self._db)
         cols = {
             "week_id": "INTEGER NOT NULL REFERENCES Week(week_id)",
@@ -198,6 +277,10 @@ class Tables(Frames):
         manager.insert_data("WeeklyRestriction", data)
 
     def t_summary_restriction(self) -> None:
+        """
+        Creates and populates the 'SummaryRestriction' table with data
+        from summary_restriction_df.
+        """
         manager = DatabaseManager(self._db)
         cols = {
             "date_id": "INTEGER NOT NULL REFERENCES Date(date_id)",
@@ -210,6 +293,10 @@ class Tables(Frames):
         manager.insert_data("SummaryRestriction", data)
 
     def generate(self) -> None:
+        """
+        Calls methods to create and populate all tables in the database
+        based on the data provided in the DataFrames.
+        """
         self.t_date()
         self.t_week()
         self.t_restriction()
@@ -220,6 +307,7 @@ class Tables(Frames):
 
 
 def main() -> None:
+    """Creates and populates the database based on the ERD"""
     db_path = "database_creation/covid.db"
     daily_path = "datasets/restrictions_daily.csv"
     weekly_path = "datasets/restrictions_weekly.csv"
@@ -236,4 +324,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    
