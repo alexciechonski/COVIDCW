@@ -24,8 +24,6 @@ COVIDCW
 │   ├── restrictions_summary.csv
 │   └── restrictions_weekly.csv
 │
-├── venv
-│
 ├── .gitignore
 ├── pyproject.toml
 ├── readme.md
