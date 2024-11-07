@@ -322,7 +322,9 @@ def main() -> None:
     """Loads, explores and prepares the data"""
     # Dataset Attribution:
     # Contains public sector information licensed under the Open Government Licence v3.0.
-    # Source: COVID-19 Restrictions Timeseries dataset, Greater London Authority (GLA), London Datastore
+
+    # Source:
+    # COVID-19 Restrictions Timeseries dataset, Greater London Authority (GLA), London Datastore
     data_loader = DataLoader(
         "datasets/restrictions_daily.csv",
         "datasets/restrictions_weekly.csv",
