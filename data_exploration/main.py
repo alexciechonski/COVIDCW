@@ -196,10 +196,10 @@ class DataPreparation:
         self.weekly = weekly
         self.summary = summary.dropna()
 
-    @staticmethod
-    def num_days_closed(data: pd.DataFrame) -> dict[str,int]:
+    def num_days_closed(self, folder_path) -> dict[str,int]:
         """
-        Calculates the number of days different types of restrictions were enforced.
+        Calculates the number of days different types of restrictions were enforced and
+        saves the data.
 
         Parameters:
         data (pd.DataFrame): DataFrame with restriction data.
@@ -208,17 +208,16 @@ class DataPreparation:
         dict[str, int]: Dictionary with restriction types as keys and count of
         days enforced as values.
         """
-        schools_closed = data['schools_closed'].tolist().count(1)
-        pubs_closed = data['pubs_closed'].tolist().count(1)
-        shops_closed = data['shops_closed'].tolist().count(1)
-        eating_closed = data['eating_places_closed'].tolist().count(1)
-        mixing = data['household_mixing_indoors_banned'].tolist().count(1)
-        wfh = data['wfh'].tolist().count(1)
-        rule6 = data['rule_of_6_indoors'].tolist().count(1)
-        curfew = data['curfew'].tolist().count(1)
-        eat_out = data['eat_out_to_help_out'].tolist().count(1)
-        return {
-            # 'time': days if days is not None else weeks if weeks is not None else None,
+        schools_closed = self.daily['schools_closed'].tolist().count(1)
+        pubs_closed = self.daily['pubs_closed'].tolist().count(1)
+        shops_closed = self.daily['shops_closed'].tolist().count(1)
+        eating_closed = self.daily['eating_places_closed'].tolist().count(1)
+        mixing = self.daily['household_mixing_indoors_banned'].tolist().count(1)
+        wfh = self.daily['wfh'].tolist().count(1)
+        rule6 = self.daily['rule_of_6_indoors'].tolist().count(1)
+        curfew = self.daily['curfew'].tolist().count(1)
+        eat_out = self.daily['eat_out_to_help_out'].tolist().count(1)
+        res = {
             'schools': schools_closed,
             'pubs_closed': pubs_closed,
             'shops_closed': shops_closed,
@@ -229,15 +228,17 @@ class DataPreparation:
             'curfew': curfew,
             'eat_out': eat_out
         }
+        with open(f'{folder_path}/num_days_closed.json', 'w', encoding='utf-8') as file:
+            json.dump(res, file, indent=2)
+        return res
 
     @staticmethod
-    def plot_num_days_closed(data_dict: dict, title: str, folder_path: str) -> None:
+    def plot_num_days_closed(data_dict: dict, folder_path: str) -> None:
         """
         Creates and saves a bar chart showing the number of days each restriction was enforced.
 
         Parameters:
         data_dict (dict): Dictionary with restriction types and counts of days enforced.
-        title (str): Title label for the y-axis.
         folder_path (str): Path where the plot image will be saved.
         """
         names = list(data_dict.keys())
@@ -247,7 +248,7 @@ class DataPreparation:
         plt.bar(names, values, color='skyblue')
 
         plt.xlabel('Restriction Type')
-        plt.ylabel(f'Total number of {title} enforced:')
+        plt.ylabel('Total number of days enforced:')
         plt.title('Bar Chart')
 
         plt.xticks(rotation=45, ha='right')
@@ -270,6 +271,11 @@ class DataPreparation:
             )
         x_values = data['date'].tolist()
         y_values = data['row_sum'].tolist()
+        xy_data = pd.DataFrame({
+            'date': x_values,
+            'num_restrictions':y_values
+        })
+        xy_data.to_csv(f"{folder_path}/timeline_data.csv")
 
         plt.figure(figsize=(10, 6))
         plt.plot(x_values, y_values, color='skyblue')
@@ -294,6 +300,7 @@ class DataPreparation:
         self.summary['level'] = [levels[i % len(levels)] for i in range(len(self.summary))]
         data = self.summary[['date','restriction','level']]
         data['date'] = pd.to_datetime(data['date'], errors='coerce')
+        data.to_csv(f"{folder_path}/timeline_events.csv")
 
         _,  axis = plt.subplots(figsize=(18,9))
         axis.plot(data['date'], [0,]*len(data), "-o", color="black", markerfacecolor="white")
@@ -322,7 +329,6 @@ def main() -> None:
     """Loads, explores and prepares the data"""
     # Dataset Attribution:
     # Contains public sector information licensed under the Open Government Licence v3.0.
-
     # Source:
     # COVID-19 Restrictions Timeseries dataset, Greater London Authority (GLA), London Datastore
     data_loader = DataLoader(
@@ -343,10 +349,11 @@ def main() -> None:
     folder_path = "data_exploration/prepared_data/figs"
     prep = DataPreparation(daily, weekly, summary)
 
-    #plot timeline graph
+    # plot timeline graph
     prep.cumulative_timeline(daily, folder_path)
     # plot number of days closed bar chart
-    prep.plot_num_days_closed(prep.num_days_closed(daily), 'days', folder_path)
+    num_days_closed = prep.num_days_closed(folder_path)
+    prep.plot_num_days_closed(num_days_closed, folder_path)
     # plot restriction timelime
     prep.plot_restriction_timeline(folder_path)
 
