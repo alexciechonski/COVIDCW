@@ -17,6 +17,8 @@ Run this script as a standalone program to generate exploration logs and visuali
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+from data_exploration.utils import save_to_csv # pylint: disable=E0611
+
 class DataLoader:
     """
     Loads data from csv to pd.DataFrame
@@ -196,7 +198,7 @@ class DataPreparation:
         self.weekly = weekly
         self.summary = summary.dropna()
 
-    def num_days_closed(self, folder_path) -> dict[str,int]:
+    def num_days_closed(self) -> dict[str,int]:
         """
         Calculates the number of days different types of restrictions were enforced and
         saves the data.
@@ -228,8 +230,6 @@ class DataPreparation:
             'curfew': curfew,
             'eat_out': eat_out
         }
-        with open(f'{folder_path}/num_days_closed.json', 'w', encoding='utf-8') as file:
-            json.dump(res, file, indent=2)
         return res
 
     @staticmethod
@@ -257,7 +257,7 @@ class DataPreparation:
         plt.savefig(f'{folder_path}/num_days_closed.png')
 
     @staticmethod
-    def cumulative_timeline(data: pd.DataFrame, folder_path: str) -> None:
+    def cumulative_timeline_data(data: pd.DataFrame) -> dict:
         """
         Creates a line plot showing the cumulative number of restrictions enforced in time.
 
@@ -271,12 +271,32 @@ class DataPreparation:
             )
         x_values = data['date'].tolist()
         y_values = data['row_sum'].tolist()
-        xy_data = pd.DataFrame({
-            'date': x_values,
-            'num_restrictions':y_values
-        })
-        xy_data.to_csv(f"{folder_path}/timeline_data.csv")
+        return {
+            "x_vals": x_values,
+            "y_vals": y_values
+        }
 
+    @staticmethod
+    def plot_cumulative_timeline(xy_dict: dict, folder_path: str) -> None:
+        """
+        Generates and saves a cumulative timeline plot of restrictions enforced over time.
+
+        This static method creates a line plot based on the x and y values
+        provided in the dictionary.
+        The plot displays the cumulative number of restrictions enforced each day,
+        with labels and a title for clarity. The resulting plot is saved as a PNG file.
+
+        Parameters:
+        - xy_dict (dict): A dictionary containing data for the plot. Expected keys are:
+                        - 'x_vals': List of values for the x-axis.
+                        - 'y_vals': List of values for the y-axis.
+        - folder_path (str): The folder path where the plot image will be saved.
+
+        Returns:
+        - None
+        """
+        x_values = xy_dict['x_vals']
+        y_values = xy_dict['y_vals']
         plt.figure(figsize=(10, 6))
         plt.plot(x_values, y_values, color='skyblue')
 
@@ -289,7 +309,7 @@ class DataPreparation:
         plt.tight_layout()
         plt.savefig(f'{folder_path}/cumulative_timeline.png')
 
-    def plot_restriction_timeline(self, folder_path: str) -> None:
+    def restriction_timeline_data(self) -> pd.DataFrame:
         """
         Creates and saves a timeline plot showing the sequence of restrictions over time.
 
@@ -300,8 +320,23 @@ class DataPreparation:
         self.summary['level'] = [levels[i % len(levels)] for i in range(len(self.summary))]
         data = self.summary[['date','restriction','level']]
         data['date'] = pd.to_datetime(data['date'], errors='coerce')
-        data.to_csv(f"{folder_path}/timeline_events.csv")
+        return data
 
+    @staticmethod
+    def plot_restriction_timeline(data: pd.DataFrame, folder_path: str) -> None:
+        """
+        Plots a cumulative timeline graph of restrictions enforced over time
+        and saves it as a PNG file.
+
+        Parameters:
+        - xy_dict (dict): A dictionary containing x and y values for the plot.
+            Expected keys are 'x_vals' for the x-axis data (dates)
+            and 'y_vals' for the y-axis data (restriction counts).
+        - folder_path (str): The folder path where the plot image will be saved.
+
+        Returns:
+        - None
+        """
         _,  axis = plt.subplots(figsize=(18,9))
         axis.plot(data['date'], [0,]*len(data), "-o", color="black", markerfacecolor="white")
         axis.set_ylim(-7,7)
@@ -347,15 +382,22 @@ def main() -> None:
 
     # Data Preparation
     folder_path = "data_exploration/prepared_data/figs"
+    data_path = "data_exploration/prepared_data"
     prep = DataPreparation(daily, weekly, summary)
 
     # plot timeline graph
-    prep.cumulative_timeline(daily, folder_path)
+    timeline_data = prep.cumulative_timeline_data(daily)
+    save_to_csv(timeline_data, 'timeline_data.csv', data_path)
+
     # plot number of days closed bar chart
-    num_days_closed = prep.num_days_closed(folder_path)
+    num_days_closed = prep.num_days_closed()
+    save_to_csv(num_days_closed, 'num_days_closed.csv', data_path)
     prep.plot_num_days_closed(num_days_closed, folder_path)
+
     # plot restriction timelime
-    prep.plot_restriction_timeline(folder_path)
+    restriction_data = prep.restriction_timeline_data()
+    save_to_csv(restriction_data, 'restriction_data', data_path)
+    prep.plot_restriction_timeline(restriction_data, folder_path)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,30 @@
+date,restriction,level
+2020-03-17,Work from home advised,-5
+2020-03-21,Pubs and hospitality close,-3
+2020-03-23,Schools close,-1
+2020-03-24,Lockdown 1,1
+2020-05-11,Stay alert,3
+2020-06-01,Schools reopen,5
+2020-06-15,Shops reopen,-5
+2020-07-04,Hospitality reopens,-3
+2020-08-01,Covid secure workplaces introduced,-1
+2020-08-03,Eat out to help out,1
+2020-08-31,End of eat out to help out,3
+2020-09-14,Rule of 6,5
+2020-09-22,WFH encouraged again,-5
+2020-09-24,Curfew,-3
+2020-10-14,Tier 1,-1
+2020-10-17,Tier 2,1
+2020-11-05,Lockdown 2,3
+2020-12-02,Tier 2,5
+2020-12-16,Tier 3,-5
+2020-12-20,Tier 4,-3
+2021-01-05,Lockdown 3,-1
+2021-03-08,Roadmap out of lockdown: Step 1.1,1
+2021-03-29,Roadmap out of lockdown: Step 1.2,3
+2021-04-12,Roadmap out of lockdown: Step 2,5
+2021-05-17,Roadmap out of lockdown: Step 3,-5
+2021-07-19,Roadmap out of lockdown: Step 4,-3
+2021-12-13,Plan B,-1
+2021-12-13,WFH encouraged,1
+2022-01-27,Return to Plan A,3
