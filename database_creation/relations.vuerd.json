@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -106,
-    "scrollLeft": -497,
-    "zoomLevel": 1,
+    "scrollTop": -299,
+    "scrollLeft": -317,
+    "zoomLevel": 0.75,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -134,7 +134,7 @@
           {
             "name": "week_start",
             "comment": "",
-            "dataType": "DATE",
+            "dataType": "TEXT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -159,7 +159,7 @@
           "active": false,
           "left": 974.1092,
           "top": 665.6667,
-          "zIndex": 349,
+          "zIndex": 426,
           "widthName": 60,
           "widthComment": 60
         },
