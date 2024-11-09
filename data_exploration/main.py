@@ -390,7 +390,7 @@ def main() -> None:
 
     # plot restriction timelime
     restriction_data = prep.restriction_timeline_data()
-    save_to_csv(restriction_data, 'restriction_data', data_path)
+    save_to_csv(restriction_data, 'restriction_data.csv', data_path)
     prep.plot_restriction_timeline(restriction_data, folder_path)
 
 if __name__ == "__main__":
