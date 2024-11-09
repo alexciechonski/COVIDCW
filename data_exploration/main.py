@@ -291,9 +291,6 @@ class DataPreparation:
                         - 'x_vals': List of values for the x-axis.
                         - 'y_vals': List of values for the y-axis.
         - folder_path (str): The folder path where the plot image will be saved.
-
-        Returns:
-        - None
         """
         x_values = xy_dict['x_vals']
         y_values = xy_dict['y_vals']
@@ -333,9 +330,6 @@ class DataPreparation:
             Expected keys are 'x_vals' for the x-axis data (dates)
             and 'y_vals' for the y-axis data (restriction counts).
         - folder_path (str): The folder path where the plot image will be saved.
-
-        Returns:
-        - None
         """
         _,  axis = plt.subplots(figsize=(18,9))
         axis.plot(data['date'], [0,]*len(data), "-o", color="black", markerfacecolor="white")
