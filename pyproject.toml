@@ -16,8 +16,7 @@ requires-python = ">=3.6"
 
 [tool.pylint.'MESSAGES CONTROL']
 disable=[
-  'no-name-in-module',
-  'import-error'
+  'no-name-in-module'
 ]
 # Added 14/10/24
 [tool.setuptools.packages.find]

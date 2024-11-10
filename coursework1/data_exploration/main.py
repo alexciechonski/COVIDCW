@@ -17,7 +17,7 @@ Run this script as a standalone program to generate exploration logs and visuali
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from coursework1.data_exploration.utils import save_to_csv # pylint: disable = import-error
+from utils import save_to_csv
 
 class DataLoader:
     """
@@ -314,9 +314,10 @@ class DataPreparation:
         folder_path (str): Path where the plot image will be saved.
         """
         levels = [-5, -3, -1, 1, 3, 5]
-        self.summary['level'] = [levels[i % len(levels)] for i in range(len(self.summary))]
+        self.summary = self.summary.copy()
+        self.summary.loc[:, 'level'] = [levels[i % len(levels)] for i in range(len(self.summary))]
         data = self.summary[['date','restriction','level']]
-        data['date'] = pd.to_datetime(data['date'], errors='coerce')
+        data.loc[:, 'date'] = pd.to_datetime(data['date'], errors='coerce')
         return data
 
     @staticmethod
@@ -362,7 +363,7 @@ def main() -> None:
     # COVID-19 Restrictions Timeseries dataset, Greater London Authority (GLA), London Datastore
     data_loader = DataLoader(
         "coursework1/datasets/restrictions_daily.csv",
-        "coursewrk1/datasets/restrictions_weekly.csv",
+        "coursework1/datasets/restrictions_weekly.csv",
         "coursework1/datasets/restrictions_summary.csv"
         )
     daily, weekly, summary = data_loader.load_data()
