@@ -43,6 +43,11 @@ class DatabaseManager:
         self._conn = sqlite3.connect(self._db)
         self._conn.execute("PRAGMA foreign_keys = ON;")
 
+    def close_connection(self) -> None:
+        """Closes the database connection."""
+        if self._conn:
+            self._conn.close()
+
     def show_tables(self) -> None:
         """
         Connects to an SQLite database and prints all table names.
@@ -59,8 +64,6 @@ class DatabaseManager:
                 print("No tables found in the database.")
         except sqlite3.Error as err:
             print(f"An error occurred: {err}")
-        finally:
-            self._conn.close()
 
     def read_table_fields(self, table: str) -> None:
         """
@@ -81,8 +84,6 @@ class DatabaseManager:
                 print(f"No fields found or table '{table}' does not exist.")
         except sqlite3.Error as err:
             print(f"An error occurred: {err}")
-        finally:
-            self._conn.close()
 
     def read_table_vals(self, table: str) -> None:
         """
@@ -105,8 +106,6 @@ class DatabaseManager:
                 print(f"The table '{table}' is empty or does not exist.")
         except sqlite3.Error as err:
             print(f"An error occurred: {err}")
-        finally:
-            self._conn.close()
 
     def delete_table(self, table_name: str) -> None:
         """
@@ -122,8 +121,6 @@ class DatabaseManager:
             print(f"Table '{table_name}' has been deleted from the database '{self._db}'.")
         except sqlite3.DatabaseError as db_err:
             print(f"Database error occurred: {db_err}")
-        finally:
-            self._conn.close()
 
     def insert_data(self, table_name: str, data: list[tuple[Any, ...]]) -> None:
         """
@@ -142,11 +139,9 @@ class DatabaseManager:
             for row in data:
                 cursor.execute(insert_sql, row)
             print(f"Inserted {len(data)} rows into '{table_name}' successfully.")
+            self._conn.commit()
         except sqlite3.Error as err:
             print(f"An error occurred: {err}")
-        finally:
-            self._conn.commit()
-            self._conn.close()
 
     def create_table(self, table_name: str, cols_dict:dict[str,str]) -> None:
         """
@@ -165,11 +160,9 @@ class DatabaseManager:
         try:
             cursor.execute(query)
             print(f"Table '{table_name}' created successfully.")
+            self._conn.commit()
         except sqlite3.Error as err:
             print(f"An error occurred: {err}")
-        finally:
-            self._conn.commit()
-            self._conn.close()
 
 class Tables(Frames):
     """
@@ -290,6 +283,7 @@ class Tables(Frames):
         }
         manager.create_table("SummaryRestriction", cols)
         data = list(self.summary_restriction_df.itertuples(index=False, name=None))
+        print(data)
         manager.insert_data("SummaryRestriction", data)
 
     def generate(self) -> None:
@@ -308,10 +302,10 @@ class Tables(Frames):
 
 def main() -> None:
     """Creates and populates the database based on the ERD"""
-    db_path = "database_creation/covid.db"
-    daily_path = "datasets/restrictions_daily.csv"
-    weekly_path = "datasets/restrictions_weekly.csv"
-    summary_path = "datasets/restrictions_summary.csv"
+    db_path = "coursework1/database_creation/covid.db" #integrity error
+    daily_path = "coursework1/datasets/restrictions_daily.csv"
+    weekly_path = "coursework1/datasets/restrictions_weekly.csv"
+    summary_path = "coursework1/datasets/restrictions_summary.csv"
     manager = DatabaseManager(db_path)
     tables = Tables(
         db_path,
@@ -319,8 +313,11 @@ def main() -> None:
         weekly_path=weekly_path,
         summary_path=summary_path
         )
-    tables.generate()
-    manager.show_tables()
+    try:
+        tables.generate()
+        manager.show_tables()
+    finally:
+        manager.close_connection()
 
 if __name__ == "__main__":
     main()

@@ -17,7 +17,7 @@ Run this script as a standalone program to generate exploration logs and visuali
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from data_exploration.utils import save_to_csv
+from coursework1.data_exploration.utils import save_to_csv # pylint: disable = import-error
 
 class DataLoader:
     """
@@ -361,22 +361,22 @@ def main() -> None:
     # Source:
     # COVID-19 Restrictions Timeseries dataset, Greater London Authority (GLA), London Datastore
     data_loader = DataLoader(
-        "datasets/restrictions_daily.csv",
-        "datasets/restrictions_weekly.csv",
-        "datasets/restrictions_summary.csv"
+        "coursework1/datasets/restrictions_daily.csv",
+        "coursewrk1/datasets/restrictions_weekly.csv",
+        "coursework1/datasets/restrictions_summary.csv"
         )
     daily, weekly, summary = data_loader.load_data()
 
     # Data Exploration Summaries
-    output_file = "data_exploration/prepared_data/data.txt"
+    output_file = "coursework1/data_exploration/prepared_data/data.txt"
     explo = DataExploration(daily, weekly, summary)
     explo.get_data_shapes(output_file) # dataframe shapes
     explo.get_data_types(output_file) # dataframe data types
     explo.get_columns(output_file) # column names
 
     # Data Preparation
-    folder_path = "data_exploration/prepared_data/figs"
-    data_path = "data_exploration/prepared_data"
+    folder_path = "coursework1/data_exploration/prepared_data/figs"
+    data_path = "coursework1/data_exploration/prepared_data"
     prep = DataPreparation(daily, weekly, summary)
 
     # plot timeline graph

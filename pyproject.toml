@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "comp0035-14Covid-1"
 version = "2024.1"
-description = "COMP0035 Coursework using DATASET NAME"  # Replace DATASET NAME with the name of your dataset
+description = "COMP0035 Coursework using 14-Covid-1 dataset"
 readme = "README.md"
 keywords = ["data-science", "sqlite", "database", "data-exploration"]
 classifiers = [
@@ -16,7 +16,8 @@ requires-python = ">=3.6"
 
 [tool.pylint.'MESSAGES CONTROL']
 disable=[
-  'no-name-in-module'
+  'no-name-in-module',
+  'import-error'
 ]
 # Added 14/10/24
 [tool.setuptools.packages.find]

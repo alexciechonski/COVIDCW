@@ -33,8 +33,8 @@ class Frames:
             weekly_path (str): Path to the weekly dataset CSV file.
             summary_path (str): Path to the summary dataset CSV file.
         """
-        self.daily = pd.read_csv(daily_path).dropna()
-        self.weekly = pd.read_csv(weekly_path).dropna()
+        self.daily = pd.read_csv(daily_path)
+        self.weekly = pd.read_csv(weekly_path)
         self.summary =  pd.read_csv(summary_path).dropna()
         self.dates_map = {date: idx for idx, date in enumerate(self.daily['date'].tolist())}
         self.weeks_map = {
