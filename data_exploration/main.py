@@ -17,7 +17,7 @@ Run this script as a standalone program to generate exploration logs and visuali
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from data_exploration.utils import save_to_csv # pylint: disable=E0611
+from data_exploration.utils import save_to_csv
 
 class DataLoader:
     """

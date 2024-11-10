@@ -32,7 +32,7 @@ COVIDCW
 
 
 Dataset
-The dataset used in this project is sourced from https://data.london.gov.uk/dataset/covid-19-restrictions-timeseries. It is licensed under UK Open Government Licence, which can be found here https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/.
+The dataset used in this project is sourced from https://data.london.gov.uk/dataset/covid-19-restrictions-timeseries. It is licensed under the UK Open Government Licence, which can be found here https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/.
 
 
 Setup and Installation

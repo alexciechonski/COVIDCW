@@ -1,16 +1,16 @@
 [project]
-name = "comp0035cw1"
+name = "COVIDCW"
 version = "1.0.0"
 description = "COMP0035 Coursework: Data exploration, preparation, and database creation using SQLite"
-authors = [
-    { name = "Your Name", email = "your.email@example.com" }
-]
 readme = "README.md"
 keywords = ["data-science", "sqlite", "database", "data-exploration"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
 requires-python = ">=3.6"
 
+[tool.pylint.'MESSAGES CONTROL']
+disable=[
+  'no-name-in-module'
+]
