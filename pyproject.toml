@@ -1,7 +1,11 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "COVIDCW"
-version = "1.0.0"
-description = "COMP0035 Coursework: Data exploration, preparation, and database creation using SQLite"
+name = "comp0035-14Covid-1"
+version = "2024.1"
+description = "COMP0035 Coursework using DATASET NAME"  # Replace DATASET NAME with the name of your dataset
 readme = "README.md"
 keywords = ["data-science", "sqlite", "database", "data-exploration"]
 classifiers = [
@@ -14,3 +18,6 @@ requires-python = ">=3.6"
 disable=[
   'no-name-in-module'
 ]
+# Added 14/10/24
+[tool.setuptools.packages.find]
+include = ["coursework1", "coursework2"]
