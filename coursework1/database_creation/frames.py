@@ -50,7 +50,7 @@ class Frames:
         Returns:
             pd.DataFrame: DataFrame with columns 'date_id' and 'date'.
         """
-        return pd.DataFrame(list(self.dates_map.items()), columns=["date_id", "date"])
+        return pd.DataFrame(list(self.dates_map.items()), columns=["date", "date_id"])
 
     def get_week_df(self)-> pd.DataFrame:
         """
@@ -59,7 +59,7 @@ class Frames:
         Returns:
             pd.DataFrame: DataFrame with columns 'week_id' and 'week_start'.
         """
-        return pd.DataFrame(list(self.weeks_map.items()), columns=["week_id", "week_start"])
+        return pd.DataFrame(list(self.weeks_map.items()), columns=["week_start", "week_id"])
 
     def get_restriction_df(self) -> pd.DataFrame:
         """
@@ -68,7 +68,7 @@ class Frames:
         Returns:
             pd.DataFrame: DataFrame with columns 'restriction' and 'id'.
         """
-        return pd.DataFrame(list(self.restrs_map.items()), columns=['restriction', 'id'])
+        return pd.DataFrame(list(self.restrs_map.items()), columns=['restriction', 'restriction_id'])
 
     def get_source_df(self) -> pd.DataFrame:
         """
@@ -77,7 +77,7 @@ class Frames:
         Returns:
             pd.DataFrame: DataFrame with columns 'source' and 'id'.
         """
-        return pd.DataFrame(list(self.sources_map.items()), columns=['source', 'id'])
+        return pd.DataFrame(list(self.sources_map.items()), columns=['source', 'source_id'])
 
     def get_summary_restriction_df(self) -> pd.DataFrame:
         """

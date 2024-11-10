@@ -283,7 +283,6 @@ class Tables(Frames):
         }
         manager.create_table("SummaryRestriction", cols)
         data = list(self.summary_restriction_df.itertuples(index=False, name=None))
-        print(data)
         manager.insert_data("SummaryRestriction", data)
 
     def generate(self) -> None:
@@ -302,7 +301,7 @@ class Tables(Frames):
 
 def main() -> None:
     """Creates and populates the database based on the ERD"""
-    db_path = "coursework1/database_creation/covid.db" #integrity error
+    db_path = "coursework1/database_creation/covid2.db" #integrity error
     daily_path = "coursework1/datasets/restrictions_daily.csv"
     weekly_path = "coursework1/datasets/restrictions_weekly.csv"
     summary_path = "coursework1/datasets/restrictions_summary.csv"
