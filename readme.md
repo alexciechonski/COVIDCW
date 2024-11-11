@@ -3,7 +3,7 @@ The project includes Python scripts to explore and clean the dataset, as well as
 
 Project Structure
 COVIDCW
-project-root/
+comp0035-cw-alexciechonski/
 │
 ├── coursework1/
 │   ├── data_exploration/
