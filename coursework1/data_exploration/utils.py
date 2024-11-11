@@ -5,8 +5,9 @@ The `save_to_csv` function allows users to save a `pandas.DataFrame` or a dictio
 It automatically converts the dictionary to a DataFrame before saving and supports specifying the
 file name and file path for the output CSV.
 """
+from typing import Any
 import pandas as pd
-def save_to_csv(data, file_name, path):
+def save_to_csv(data: Any, file_name: str, path: str):
     """
     Saves data to a CSV file, supporting both DataFrames and dictionaries.
 
@@ -15,7 +16,7 @@ def save_to_csv(data, file_name, path):
     The resulting CSV file is saved to the specified path with the given file name.
 
     Parameters:
-    - data: The data to save, which can be either a `pandas.DataFrame` or a dictionary.
+    - data (Any): The data to save, which can be either a `pandas.DataFrame` or a dictionary.
     - file_name (str): The name of the CSV file (without path).
     - path (str): The directory path where the CSV file will be saved.
 
