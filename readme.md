@@ -48,7 +48,8 @@ The dataset used in this project is sourced from https://data.london.gov.uk/data
 
 Setup and Installation
 1. Clone the repository:
-    git clone https://github.com/alexciechonski/COVIDCW
+    git clone https://github.com/ucl-comp0035/comp0035-cw-alexciechonski
+    cd comp0035-cw-alexciechonski
 
 2. Create and activate a virtual environment:
     Mac OS/Linux:
