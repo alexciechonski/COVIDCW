@@ -59,6 +59,8 @@ Setup and Installation
     python3 -m venv venv
     venv\Scripts\activate
 
+    If necessary select a python interpreter related to the virtual environment by using Cmd+Shift+P (MacOS) or Ctrl+Shift+P (Windows)
+
 3. Install the requirements
     pip install -r requirements.txt
     
