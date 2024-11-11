@@ -2,7 +2,6 @@ This project is part of the COMP0035 module coursework and demonstrates the proc
 The project includes Python scripts to explore and clean the dataset, as well as to create and populate an SQLite database.
 
 Project Structure
-COVIDCW
 comp0035-cw-alexciechonski/
 │
 ├── coursework1/
