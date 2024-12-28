@@ -1,0 +1,24 @@
+SELECT restriction_id, COUNT(*) AS restriction_count
+FROM DailyRestriction
+WHERE in_place = 1
+GROUP BY restriction_id;
+
+INSERT INTO Dates (DateID, Date)
+VALUES (1418, 2024-01-08);
+
+DELETE FROM Dates
+WHERE DateID = 1418;
+
+UPDATE Dates
+SET DateID = 1419
+WHERE Date = 2024-01-08;
+
+SELECT restriction_id, SUM(in_place) AS total_restrictions
+FROM DailyRestriction
+WHERE date_id <= (SELECT DateID FROM Dates WHERE Date <= '2024-05-05')
+GROUP BY restriction_id;
+
+SELECT d.date AS date_value, s.name AS source_name
+FROM SummaryRestriction sr
+JOIN Date d ON sr.date_id = d.date_id
+JOIN Source s ON sr.source_id = s.source_id;
