@@ -5,6 +5,7 @@ class Queries:
         self._db = db
         self.queries = self.get_queries(txt_file)
 
+    @staticmethod
     def get_queries(txt_file):
         queries = []
         with open(txt_file, 'r') as file:
@@ -43,11 +44,22 @@ class Queries:
         with sqlite3.connect(self._db) as conn:
             cursor = conn.cursor()
             try:
+                if "WHERE" in query:
+                    table_name = query.split("FROM")[1].split("WHERE")[0].strip()
+                    where_clause = query.split("WHERE")[1].strip()
+                else:
+                    table_name = query.split("FROM")[1].strip()
+                    where_clause = ""
+                select_query = f"SELECT * FROM {table_name} WHERE {where_clause}" if where_clause else f"SELECT * FROM {table_name}"
+                cursor.execute(select_query)
+                deleted_rows = cursor.fetchall()
                 cursor.execute(query)
+                conn.commit()
                 print("Query successful")
+                return deleted_rows
             except sqlite3.DatabaseError as db_err:
                 print(f"Database error occurred: {db_err}")
-            return
+                return []
 
 def main():
     queries = Queries("..coursework1/database_creation/covid.db", "queries.txt")
